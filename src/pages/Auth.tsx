@@ -58,8 +58,8 @@ const Auth = () => {
         });
         if (error) throw error;
         toast({
-          title: "Account created!",
-          description: "Welcome to MindfulPath. You can now access all features.",
+          title: "Check your email!",
+          description: "We've sent you a verification link. Please check your inbox to confirm your account.",
         });
       }
     } catch (error: any) {
