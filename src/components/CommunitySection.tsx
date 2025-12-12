@@ -1,5 +1,6 @@
 import { MessageSquare, Users, Heart, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const features = [
   {
@@ -25,6 +26,15 @@ const features = [
 ];
 
 const CommunitySection = () => {
+  const { toast } = useToast();
+
+  const handleJoinCommunity = () => {
+    toast({
+      title: "Welcome to the Community! 🌟",
+      description: "Thank you for your interest! Community features are coming soon. We'll notify you when they're ready.",
+    });
+  };
+
   return (
     <section className="py-20 bg-background" id="community">
       <div className="container mx-auto px-4">
@@ -42,7 +52,7 @@ const CommunitySection = () => {
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
-              {features.map((feature, index) => (
+              {features.map((feature) => (
                 <div
                   key={feature.title}
                   className="flex items-start gap-3 p-4 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
@@ -58,7 +68,7 @@ const CommunitySection = () => {
               ))}
             </div>
 
-            <Button variant="hero" size="lg">
+            <Button variant="hero" size="lg" onClick={handleJoinCommunity}>
               Join the Community
             </Button>
           </div>

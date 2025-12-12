@@ -1,28 +1,31 @@
 import { Phone, Heart, MessageCircle, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const resources = [
   {
     name: "National Suicide Prevention Lifeline",
     phone: "988",
+    phoneLink: "tel:988",
     description: "Free, confidential support 24/7",
     icon: Phone,
   },
   {
     name: "Crisis Text Line",
     phone: "Text HOME to 741741",
+    phoneLink: "sms:741741?body=HOME",
     description: "Text-based crisis support",
     icon: MessageCircle,
   },
   {
     name: "SAMHSA National Helpline",
     phone: "1-800-662-4357",
+    phoneLink: "tel:1-800-662-4357",
     description: "Treatment referral service",
     icon: Heart,
   },
   {
     name: "NAMI Helpline",
     phone: "1-800-950-6264",
+    phoneLink: "tel:1-800-950-6264",
     description: "Mental health support & resources",
     icon: Users,
   },
@@ -47,9 +50,10 @@ const HelplineSection = () => {
 
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {resources.map((resource, index) => (
-            <div
+            <a
               key={resource.name}
-              className="bg-card rounded-2xl p-6 shadow-soft hover:shadow-elevated transition-all duration-300 border border-border group"
+              href={resource.phoneLink}
+              className="bg-card rounded-2xl p-6 shadow-soft hover:shadow-elevated transition-all duration-300 border border-border group cursor-pointer block"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="flex items-start gap-4">
@@ -58,20 +62,23 @@ const HelplineSection = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground mb-1">{resource.name}</h3>
-                  <p className="text-primary font-bold text-lg mb-1">{resource.phone}</p>
+                  <p className="text-primary font-bold text-lg mb-1 group-hover:underline">{resource.phone}</p>
                   <p className="text-muted-foreground text-sm">{resource.description}</p>
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
 
         <div className="mt-12 text-center">
-          <div className="inline-block bg-destructive/10 border border-destructive/20 rounded-xl px-6 py-4">
+          <a 
+            href="tel:911"
+            className="inline-block bg-destructive/10 border border-destructive/20 rounded-xl px-6 py-4 hover:bg-destructive/20 transition-colors cursor-pointer"
+          >
             <p className="text-destructive font-medium">
-              ⚠️ If you're in immediate danger, please call <strong>911</strong> or go to your nearest emergency room.
+              ⚠️ If you're in immediate danger, please call <strong className="underline">911</strong> or go to your nearest emergency room.
             </p>
-          </div>
+          </a>
         </div>
       </div>
     </section>

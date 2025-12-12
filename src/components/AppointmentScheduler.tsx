@@ -1,11 +1,18 @@
-import { Calendar, Clock, Video, Shield } from "lucide-react";
+import { Calendar, Clock, Video, Shield, User, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const AppointmentScheduler = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const timeSlots = [
     "9:00 AM", "10:00 AM", "11:00 AM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
@@ -15,6 +22,54 @@ const AppointmentScheduler = () => {
     { id: "individual", name: "Individual Counseling", duration: "50 min", icon: Video },
     { id: "group", name: "Group Support Session", duration: "90 min", icon: Shield },
   ];
+
+  const handleBookAppointment = async () => {
+    if (!name || !email || !selectedDate || !selectedTime || !selectedType) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.from("appointments").insert({
+        name,
+        email,
+        phone,
+        session_type: selectedType,
+        appointment_date: selectedDate,
+        appointment_time: selectedTime,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Appointment Booked! ✓",
+        description: `Your ${selectedType} session is scheduled for ${selectedDate} at ${selectedTime}. We'll send a confirmation to ${email}.`,
+      });
+
+      // Reset form
+      setName("");
+      setEmail("");
+      setPhone("");
+      setSelectedDate("");
+      setSelectedTime("");
+      setSelectedType("");
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      toast({
+        title: "Booking Failed",
+        description: "There was an error booking your appointment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="py-20 gradient-calm" id="schedule">
@@ -33,12 +88,55 @@ const AppointmentScheduler = () => {
         </div>
 
         <div className="max-w-4xl mx-auto bg-card rounded-3xl shadow-elevated p-8 border border-border">
+          {/* Contact Info */}
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                <User className="w-4 h-4 text-primary" />
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="w-full p-3 rounded-xl border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-primary" />
+                Email *
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="w-full p-3 rounded-xl border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                <Phone className="w-4 h-4 text-primary" />
+                Phone (optional)
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="(555) 123-4567"
+                className="w-full p-3 rounded-xl border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none transition-colors"
+              />
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 gap-8">
             {/* Session Type Selection */}
             <div>
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Video className="w-5 h-5 text-primary" />
-                Choose Session Type
+                Choose Session Type *
               </h3>
               <div className="space-y-3">
                 {sessionTypes.map((type) => (
@@ -67,7 +165,7 @@ const AppointmentScheduler = () => {
             <div>
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary" />
-                Select Date
+                Select Date *
               </h3>
               <input
                 type="date"
@@ -79,7 +177,7 @@ const AppointmentScheduler = () => {
 
               <h3 className="font-semibold text-foreground mt-6 mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
-                Select Time
+                Select Time *
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 {timeSlots.map((time) => (
@@ -105,8 +203,13 @@ const AppointmentScheduler = () => {
                 <Shield className="w-4 h-4 text-primary" />
                 <span>Your privacy is protected. All sessions are HIPAA compliant.</span>
               </div>
-              <Button variant="hero" size="lg" disabled={!selectedDate || !selectedTime || !selectedType}>
-                Book Appointment
+              <Button 
+                variant="hero" 
+                size="lg" 
+                disabled={!name || !email || !selectedDate || !selectedTime || !selectedType || isSubmitting}
+                onClick={handleBookAppointment}
+              >
+                {isSubmitting ? "Booking..." : "Book Appointment"}
               </Button>
             </div>
           </div>
