@@ -3,6 +3,13 @@ import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Background Image with Overlay */}
@@ -48,13 +55,24 @@ const HeroSection = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up"
             style={{ animationDelay: "300ms" }}
           >
-            <Button variant="hero" size="xl">
+            <Button 
+              variant="hero" 
+              size="xl"
+              onClick={() => scrollToSection("resources")}
+            >
               Get Support Now
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button variant="outline" size="xl" className="gap-2">
-              <Phone className="w-5 h-5" />
-              Crisis Helpline: 988
+            <Button 
+              variant="outline" 
+              size="xl" 
+              className="gap-2"
+              asChild
+            >
+              <a href="tel:988">
+                <Phone className="w-5 h-5" />
+                Crisis Helpline: 988
+              </a>
             </Button>
           </div>
 
@@ -82,11 +100,15 @@ const HeroSection = () => {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
-        <div className="w-6 h-10 rounded-full border-2 border-primary/50 flex items-start justify-center p-2">
+      <button 
+        onClick={() => scrollToSection("disorders")}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float cursor-pointer"
+        aria-label="Scroll to content"
+      >
+        <div className="w-6 h-10 rounded-full border-2 border-primary/50 flex items-start justify-center p-2 hover:border-primary transition-colors">
           <div className="w-1.5 h-2.5 bg-primary rounded-full animate-pulse" />
         </div>
-      </div>
+      </button>
     </section>
   );
 };

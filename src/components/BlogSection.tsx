@@ -1,5 +1,6 @@
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const blogPosts = [
   {
@@ -26,6 +27,22 @@ const blogPosts = [
 ];
 
 const BlogSection = () => {
+  const { toast } = useToast();
+
+  const handleReadMore = (title: string) => {
+    toast({
+      title: "Article Coming Soon",
+      description: `"${title}" will be available shortly. Subscribe to get notified!`,
+    });
+  };
+
+  const handleViewAll = () => {
+    toast({
+      title: "Blog Section",
+      description: "Full blog with all articles is coming soon!",
+    });
+  };
+
   return (
     <section className="py-20 gradient-calm" id="blog">
       <div className="container mx-auto px-4">
@@ -41,7 +58,7 @@ const BlogSection = () => {
               Expert insights, personal stories, and practical tips to support your mental health journey.
             </p>
           </div>
-          <Button variant="outline" className="mt-4 md:mt-0">
+          <Button variant="outline" className="mt-4 md:mt-0" onClick={handleViewAll}>
             View All Articles
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
@@ -51,8 +68,9 @@ const BlogSection = () => {
           {blogPosts.map((post, index) => (
             <article
               key={post.title}
-              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 border border-border"
+              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 border border-border cursor-pointer"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => handleReadMore(post.title)}
             >
               <div className="relative h-48 overflow-hidden">
                 <img
@@ -78,10 +96,10 @@ const BlogSection = () => {
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   {post.excerpt}
                 </p>
-                <Button variant="ghost" className="p-0 h-auto text-primary hover:bg-transparent">
+                <span className="inline-flex items-center text-primary font-medium text-sm">
                   Read More
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                </span>
               </div>
             </article>
           ))}
