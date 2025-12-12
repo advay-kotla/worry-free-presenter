@@ -1,4 +1,6 @@
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const testimonials = [
   {
@@ -73,9 +75,15 @@ const TestimonialsSection = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-muted-foreground italic">
+          <p className="text-muted-foreground italic mb-6">
             "Your story isn't over yet. There is always hope."
           </p>
+          <Link to="/testimonials">
+            <Button variant="outline" size="lg">
+              Read More Stories
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

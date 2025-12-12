@@ -26,6 +26,7 @@ export type Database = {
           phone: string | null
           session_type: string
           status: string
+          therapist: string | null
         }
         Insert: {
           appointment_date: string
@@ -38,6 +39,7 @@ export type Database = {
           phone?: string | null
           session_type: string
           status?: string
+          therapist?: string | null
         }
         Update: {
           appointment_date?: string
@@ -50,6 +52,7 @@ export type Database = {
           phone?: string | null
           session_type?: string
           status?: string
+          therapist?: string | null
         }
         Relationships: []
       }

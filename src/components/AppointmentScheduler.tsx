@@ -4,10 +4,54 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+const therapists = [
+  {
+    id: "dr-emily-chen",
+    name: "Dr. Emily Chen",
+    title: "Clinical Psychologist",
+    specialty: "Anxiety & Depression",
+    bio: "15+ years helping clients overcome anxiety and depression using CBT and mindfulness techniques.",
+    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
+  },
+  {
+    id: "dr-michael-brooks",
+    name: "Dr. Michael Brooks",
+    title: "Licensed Therapist",
+    specialty: "Trauma & PTSD",
+    bio: "Specializes in EMDR therapy and trauma-informed care. Veteran-friendly practice.",
+    image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
+  },
+  {
+    id: "dr-sarah-johnson",
+    name: "Dr. Sarah Johnson",
+    title: "Counseling Psychologist",
+    specialty: "Relationships & Family",
+    bio: "Expert in couples therapy and family dynamics. Helps rebuild connections that matter.",
+    image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face",
+  },
+  {
+    id: "dr-robert-kim",
+    name: "Dr. Robert Kim",
+    title: "Psychiatrist",
+    specialty: "Mood Disorders",
+    bio: "Board-certified psychiatrist specializing in bipolar disorder and medication management.",
+    image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150&h=150&fit=crop&crop=face",
+  },
+  {
+    id: "dr-lisa-martinez",
+    name: "Dr. Lisa Martinez",
+    title: "Licensed Clinical Social Worker",
+    specialty: "Stress & Burnout",
+    bio: "Focuses on work-life balance, caregiver support, and preventing professional burnout.",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face",
+  },
+];
+
 const AppointmentScheduler = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [selectedTherapist, setSelectedTherapist] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -24,10 +68,10 @@ const AppointmentScheduler = () => {
   ];
 
   const handleBookAppointment = async () => {
-    if (!name || !email || !selectedDate || !selectedTime || !selectedType) {
+    if (!name || !email || !selectedDate || !selectedTime || !selectedType || !selectedTherapist) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields including your preferred therapist.",
         variant: "destructive",
       });
       return;
@@ -43,13 +87,15 @@ const AppointmentScheduler = () => {
         session_type: selectedType,
         appointment_date: selectedDate,
         appointment_time: selectedTime,
+        therapist: selectedTherapist,
       });
 
       if (error) throw error;
 
+      const therapist = therapists.find(t => t.id === selectedTherapist);
       toast({
         title: "Appointment Booked! ✓",
-        description: `Your ${selectedType} session is scheduled for ${selectedDate} at ${selectedTime}. We'll send a confirmation to ${email}.`,
+        description: `Your session with ${therapist?.name} is scheduled for ${selectedDate} at ${selectedTime}. We'll send a confirmation to ${email}.`,
       });
 
       // Reset form
@@ -59,6 +105,7 @@ const AppointmentScheduler = () => {
       setSelectedDate("");
       setSelectedTime("");
       setSelectedType("");
+      setSelectedTherapist("");
     } catch (error) {
       console.error("Error booking appointment:", error);
       toast({
@@ -87,7 +134,7 @@ const AppointmentScheduler = () => {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto bg-card rounded-3xl shadow-elevated p-8 border border-border">
+        <div className="max-w-5xl mx-auto bg-card rounded-3xl shadow-elevated p-8 border border-border">
           {/* Contact Info */}
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             <div>
@@ -128,6 +175,40 @@ const AppointmentScheduler = () => {
                 placeholder="(555) 123-4567"
                 className="w-full p-3 rounded-xl border-2 border-border bg-background text-foreground focus:border-primary focus:outline-none transition-colors"
               />
+            </div>
+          </div>
+
+          {/* Therapist Selection */}
+          <div className="mb-8">
+            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+              <User className="w-5 h-5 text-primary" />
+              Choose Your Therapist *
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {therapists.map((therapist) => (
+                <button
+                  key={therapist.id}
+                  onClick={() => setSelectedTherapist(therapist.id)}
+                  className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
+                    selectedTherapist === therapist.id
+                      ? "border-primary bg-primary/5 shadow-md"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={therapist.image}
+                      alt={therapist.name}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 flex-shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-foreground text-sm truncate">{therapist.name}</p>
+                      <p className="text-xs text-primary font-medium">{therapist.specialty}</p>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{therapist.bio}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -206,7 +287,7 @@ const AppointmentScheduler = () => {
               <Button 
                 variant="hero" 
                 size="lg" 
-                disabled={!name || !email || !selectedDate || !selectedTime || !selectedType || isSubmitting}
+                disabled={!name || !email || !selectedDate || !selectedTime || !selectedType || !selectedTherapist || isSubmitting}
                 onClick={handleBookAppointment}
               >
                 {isSubmitting ? "Booking..." : "Book Appointment"}
