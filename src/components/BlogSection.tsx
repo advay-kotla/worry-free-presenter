@@ -1,6 +1,7 @@
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 const blogPosts = [
   {
@@ -26,6 +27,26 @@ const blogPosts = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" as const },
+  },
+};
+
 const BlogSection = () => {
   const { toast } = useToast();
 
@@ -44,45 +65,94 @@ const BlogSection = () => {
   };
 
   return (
-    <section className="py-20 gradient-calm" id="blog">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+    <section className="py-24 gradient-calm relative overflow-hidden" id="blog">
+      {/* Background decorations */}
+      <div className="absolute inset-0 opacity-30">
+        <motion.div
+          animate={{ y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-10 right-20 w-72 h-72 bg-serenity/30 rounded-full blur-3xl"
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end justify-between mb-12"
+        >
           <div>
-            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+            <motion.span
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+            >
               Learn & Grow
-            </span>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+            </motion.span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-4">
               Mental Health Blog
             </h2>
-            <p className="text-muted-foreground max-w-xl">
+            <p className="text-muted-foreground max-w-xl text-lg">
               Expert insights, personal stories, and practical tips to support your mental health journey.
             </p>
           </div>
-          <Button variant="outline" className="mt-4 md:mt-0" onClick={handleViewAll}>
-            View All Articles
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button variant="outline" className="mt-4 md:mt-0 group" onClick={handleViewAll}>
+              View All Articles
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </motion.span>
+            </Button>
+          </motion.div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
-            <article
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid md:grid-cols-3 gap-8"
+        >
+          {blogPosts.map((post) => (
+            <motion.article
               key={post.title}
+              variants={cardVariants}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
               className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 border border-border cursor-pointer"
-              style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => handleReadMore(post.title)}
             >
               <div className="relative h-48 overflow-hidden">
-                <img
+                <motion.img
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.6 }}
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  className="absolute top-4 left-4"
+                >
+                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-md">
                     {post.category}
                   </span>
-                </div>
+                </motion.div>
+                {/* Overlay on hover */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent"
+                />
               </div>
               
               <div className="p-6">
@@ -96,14 +166,21 @@ const BlogSection = () => {
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   {post.excerpt}
                 </p>
-                <span className="inline-flex items-center text-primary font-medium text-sm">
+                <motion.span
+                  className="inline-flex items-center text-primary font-medium text-sm"
+                >
                   Read More
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </span>
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </motion.span>
+                </motion.span>
               </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
