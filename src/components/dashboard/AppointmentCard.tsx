@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Calendar, Clock, User, Video, Phone, MapPin, MoreVertical, CheckCircle } from "lucide-react";
+import { Calendar, Clock, Video, Phone, MapPin, MoreVertical, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,16 +38,13 @@ const getSessionIcon = (type: string) => {
   return MapPin;
 };
 
-const getStatusStyles = (status: string) => {
+const getStatusStyles = (status: string, isPast: boolean) => {
+  if (isPast) return "bg-muted text-muted-foreground";
   switch (status.toLowerCase()) {
     case "confirmed":
-      return "bg-green-500/10 text-green-600 border-green-200";
+      return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
     case "pending":
-      return "bg-amber-500/10 text-amber-600 border-amber-200";
-    case "completed":
-      return "bg-primary/10 text-primary border-primary/20";
-    case "cancelled":
-      return "bg-destructive/10 text-destructive border-destructive/20";
+      return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
     default:
       return "bg-secondary text-secondary-foreground";
   }
@@ -59,70 +56,76 @@ const AppointmentCard = ({ appointment, isPast = false }: AppointmentCardProps) 
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
-      className={`relative overflow-hidden rounded-2xl bg-card border border-border p-5 shadow-soft hover:shadow-elevated transition-all duration-300 ${
-        isPast ? "opacity-80" : ""
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
+      className={`group relative overflow-hidden rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 ${
+        isPast ? "opacity-75" : ""
       }`}
     >
-      {/* Status Indicator Line */}
+      {/* Top Accent Bar */}
       <div
-        className={`absolute top-0 left-0 right-0 h-1 ${
-          isPast ? "bg-muted" : "bg-gradient-to-r from-primary to-accent"
+        className={`h-1 w-full ${
+          isPast 
+            ? "bg-muted" 
+            : "bg-gradient-to-r from-primary via-primary to-accent"
         }`}
       />
 
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12 border-2 border-primary/10">
-            <AvatarImage src={therapistImage} alt={appointment.therapist || "Therapist"} />
-            <AvatarFallback className="bg-primary/10 text-primary font-medium">
-              {appointment.therapist?.[4] || "T"}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h4 className="font-semibold text-foreground line-clamp-1">
-              {appointment.therapist || "Therapist TBD"}
-            </h4>
-            <p className="text-sm text-muted-foreground capitalize">
-              {appointment.session_type}
-            </p>
+      <div className="p-5">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-12 w-12 ring-2 ring-background shadow-md">
+              <AvatarImage src={therapistImage} alt={appointment.therapist || "Therapist"} />
+              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                {appointment.therapist?.split(" ")[1]?.[0] || "T"}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h4 className="font-semibold text-foreground line-clamp-1">
+                {appointment.therapist || "Therapist TBD"}
+              </h4>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <SessionIcon className="w-3.5 h-3.5" />
+                <span className="capitalize">{appointment.session_type.split("-").join(" ")}</span>
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            {!isPast && <DropdownMenuItem>Reschedule</DropdownMenuItem>}
-            {!isPast && <DropdownMenuItem className="text-destructive">Cancel</DropdownMenuItem>}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="w-4 h-4" />
-            <span>{format(new Date(appointment.appointment_date), "MMM d, yyyy")}</span>
-          </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="w-4 h-4" />
-            <span>{appointment.appointment_time}</span>
-          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem>View Details</DropdownMenuItem>
+              {!isPast && <DropdownMenuItem>Reschedule</DropdownMenuItem>}
+              {!isPast && <DropdownMenuItem className="text-destructive">Cancel</DropdownMenuItem>}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 text-sm">
-            <SessionIcon className="w-4 h-4 text-primary" />
-            <span className="capitalize">{appointment.session_type.split("-").join(" ")}</span>
+        {/* Date & Time */}
+        <div className="flex items-center gap-4 mb-4 p-3 bg-secondary/50 rounded-xl">
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="w-4 h-4 text-primary" />
+            <span className="font-medium text-foreground">
+              {format(new Date(appointment.appointment_date), "MMM d, yyyy")}
+            </span>
           </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <Clock className="w-4 h-4 text-primary" />
+            <span className="font-medium text-foreground">{appointment.appointment_time}</span>
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="flex items-center gap-2 mb-4">
           <Badge
-            variant="outline"
-            className={`capitalize ${getStatusStyles(isPast ? "completed" : appointment.status)}`}
+            variant="secondary"
+            className={`capitalize ${getStatusStyles(appointment.status, isPast)}`}
           >
             {isPast ? (
               <span className="flex items-center gap-1">
@@ -135,24 +138,26 @@ const AppointmentCard = ({ appointment, isPast = false }: AppointmentCardProps) 
           </Badge>
         </div>
 
+        {/* Notes Preview */}
         {appointment.notes && (
-          <p className="text-sm text-muted-foreground bg-secondary/30 rounded-lg p-3 line-clamp-2">
+          <p className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 line-clamp-2 mb-4">
             {appointment.notes}
           </p>
         )}
-      </div>
 
-      {!isPast && (
-        <div className="mt-4 pt-4 border-t border-border flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1">
-            Reschedule
-          </Button>
-          <Button size="sm" className="flex-1">
-            <Video className="w-4 h-4 mr-2" />
-            Join Session
-          </Button>
-        </div>
-      )}
+        {/* Actions */}
+        {!isPast && (
+          <div className="flex gap-2 pt-2 border-t border-border">
+            <Button variant="outline" size="sm" className="flex-1 rounded-xl">
+              Reschedule
+            </Button>
+            <Button size="sm" className="flex-1 rounded-xl gap-2">
+              <Video className="w-4 h-4" />
+              Join
+            </Button>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };
