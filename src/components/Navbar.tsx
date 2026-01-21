@@ -1,4 +1,4 @@
-import { Heart, Menu, X, User } from "lucide-react";
+import { Heart, Menu, X, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -123,16 +123,21 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                <motion.span
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-sm text-muted-foreground flex items-center gap-2"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <User className="w-4 h-4" />
-                  {user.email?.split("@")[0]}
-                </motion.span>
+                  <Link to="/dashboard">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                </motion.div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
                     Sign Out
                   </Button>
                 </motion.div>
@@ -250,9 +255,17 @@ const Navbar = () => {
                     className="pt-2 mt-2 border-t border-border flex flex-col gap-2"
                   >
                     {user ? (
-                      <Button variant="outline" className="w-full" onClick={handleSignOut}>
-                        Sign Out
-                      </Button>
+                      <>
+                        <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                          <Button variant="default" className="w-full gap-2">
+                            <LayoutDashboard className="w-4 h-4" />
+                            Dashboard
+                          </Button>
+                        </Link>
+                        <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                          Sign Out
+                        </Button>
+                      </>
                     ) : (
                       <>
                         <Link to="/auth" onClick={() => setIsOpen(false)}>
