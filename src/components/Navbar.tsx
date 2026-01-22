@@ -11,7 +11,7 @@ const navLinks = [
   { name: "Resources", href: "#resources" },
   { name: "Schedule", href: "#schedule" },
   { name: "Community", href: "#community" },
-  { name: "Blog", href: "#blog" },
+  { name: "Blog", href: "/blog", isPage: true },
   { name: "Stories", href: "/testimonials", isPage: true },
 ];
 
