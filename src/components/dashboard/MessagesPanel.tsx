@@ -107,8 +107,8 @@ const MessagesPanel = () => {
   );
 
   return (
-    <div className="rounded-2xl bg-card border border-border overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[550px]">
+    <div className="h-full rounded-2xl bg-card border border-border overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
         {/* Conversations List */}
         <div className="border-r border-border bg-secondary/20">
           <div className="p-4 border-b border-border">
@@ -123,7 +123,7 @@ const MessagesPanel = () => {
             </div>
           </div>
           
-          <ScrollArea className="h-[490px]">
+          <ScrollArea className="h-[calc(100%-65px)]">
             <div className="p-2 space-y-1">
               {filteredConversations.map((conv, index) => (
                 <motion.button
@@ -212,7 +212,7 @@ const MessagesPanel = () => {
               </div>
 
               {/* Messages */}
-              <ScrollArea className="flex-1 p-4">
+              <ScrollArea className="flex-1 p-4 h-[calc(100%-130px)]">
                 <div className="space-y-4">
                   <AnimatePresence>
                     {messages.map((message, index) => (
