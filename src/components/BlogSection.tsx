@@ -1,7 +1,7 @@
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const blogPosts = [
   {
@@ -48,22 +48,6 @@ const cardVariants = {
 };
 
 const BlogSection = () => {
-  const { toast } = useToast();
-
-  const handleReadMore = (title: string) => {
-    toast({
-      title: "Article Coming Soon",
-      description: `"${title}" will be available shortly. Subscribe to get notified!`,
-    });
-  };
-
-  const handleViewAll = () => {
-    toast({
-      title: "Blog Section",
-      description: "Full blog with all articles is coming soon!",
-    });
-  };
-
   return (
     <section className="py-24 gradient-calm relative overflow-hidden" id="blog">
       {/* Background decorations */}
@@ -71,7 +55,7 @@ const BlogSection = () => {
         <motion.div
           animate={{ y: [0, -30, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-10 right-20 w-72 h-72 bg-serenity/30 rounded-full blur-3xl"
+          className="absolute top-10 right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl"
         />
       </div>
 
@@ -103,14 +87,16 @@ const BlogSection = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Button variant="outline" className="mt-4 md:mt-0 group" onClick={handleViewAll}>
-              View All Articles
-              <motion.span
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </motion.span>
+            <Button variant="outline" className="mt-4 md:mt-0 group" asChild>
+              <Link to="/blog">
+                View All Articles
+                <motion.span
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </motion.span>
+              </Link>
             </Button>
           </motion.div>
         </motion.div>
@@ -127,57 +113,58 @@ const BlogSection = () => {
               key={post.title}
               variants={cardVariants}
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 border border-border cursor-pointer"
-              onClick={() => handleReadMore(post.title)}
+              className="group bg-card rounded-2xl overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 border border-border"
             >
-              <div className="relative h-48 overflow-hidden">
-                <motion.img
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.6 }}
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-full object-cover"
-                />
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  className="absolute top-4 left-4"
-                >
-                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-md">
-                    {post.category}
-                  </span>
-                </motion.div>
-                {/* Overlay on hover */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent"
-                />
-              </div>
-              
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
-                  <Clock className="w-4 h-4" />
-                  {post.readTime}
-                </div>
-                <h3 className="font-display font-semibold text-xl text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {post.title}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  {post.excerpt}
-                </p>
-                <motion.span
-                  className="inline-flex items-center text-primary font-medium text-sm"
-                >
-                  Read More
-                  <motion.span
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
+              <Link to="/blog">
+                <div className="relative h-48 overflow-hidden">
+                  <motion.img
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    className="absolute top-4 left-4"
                   >
-                    <ArrowRight className="w-4 h-4 ml-1" />
+                    <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-md">
+                      {post.category}
+                    </span>
+                  </motion.div>
+                  {/* Overlay on hover */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent"
+                  />
+                </div>
+                
+                <div className="p-6">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+                    <Clock className="w-4 h-4" />
+                    {post.readTime}
+                  </div>
+                  <h3 className="font-display font-semibold text-xl text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                    {post.excerpt}
+                  </p>
+                  <motion.span
+                    className="inline-flex items-center text-primary font-medium text-sm"
+                  >
+                    Read More
+                    <motion.span
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </motion.span>
                   </motion.span>
-                </motion.span>
-              </div>
+                </div>
+              </Link>
             </motion.article>
           ))}
         </motion.div>
