@@ -100,7 +100,18 @@ const blogPosts = [
     date: "Jan 8, 2026",
     readTime: "7 min read",
     image: "https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=800&h=500&fit=crop",
-    content: `<p>Mindfulness meditation is a practice that trains your attention and awareness...</p>`,
+    content: `
+      <p>Mindfulness meditation is a practice that trains your attention and awareness to achieve a mentally clear and emotionally calm state.</p>
+      
+      <h2>Getting Started</h2>
+      <p>Find a quiet spot, sit comfortably, and focus on your breath. When your mind wanders (it will!), gently bring your attention back without judgment.</p>
+      
+      <h2>The Science Behind It</h2>
+      <p>Regular meditation has been shown to reduce activity in the amygdala, increase gray matter in the prefrontal cortex, and lower cortisol levels.</p>
+      
+      <h2>Building a Practice</h2>
+      <p>Start with just 5 minutes daily and gradually increase. Consistency matters more than duration—a daily 10-minute practice beats an occasional hour-long session.</p>
+    `,
     featured: false,
   },
   {
@@ -113,7 +124,18 @@ const blogPosts = [
     date: "Jan 5, 2026",
     readTime: "9 min read",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop",
-    content: `<p>Men are significantly less likely to seek mental health support than women...</p>`,
+    content: `
+      <p>Men are significantly less likely to seek mental health support than women. Understanding why is crucial to changing this pattern.</p>
+      
+      <h2>Cultural Expectations</h2>
+      <p>Traditional masculinity often discourages emotional expression. Boys are taught to "man up" and hide vulnerability, creating barriers to seeking help.</p>
+      
+      <h2>The Cost of Silence</h2>
+      <p>Men die by suicide at nearly 4x the rate of women. This stark statistic underscores the urgent need to change how we approach men's mental health.</p>
+      
+      <h2>Creating Change</h2>
+      <p>Normalizing help-seeking, providing male-focused resources, and celebrating men who speak openly about mental health can all contribute to breaking down barriers.</p>
+    `,
     featured: false,
   },
   {
@@ -126,12 +148,149 @@ const blogPosts = [
     date: "Jan 3, 2026",
     readTime: "6 min read",
     image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=500&fit=crop",
-    content: `<p>Sleep and mental health are intimately connected...</p>`,
+    content: `
+      <p>Sleep and mental health are intimately connected. Poor sleep can trigger or worsen mental health conditions, while conditions like anxiety and depression often disrupt sleep.</p>
+      
+      <h2>The Mood-Sleep Cycle</h2>
+      <p>During sleep, your brain processes emotional experiences from the day. Without adequate rest, this processing is impaired, leading to increased emotional reactivity.</p>
+      
+      <h2>Sleep Hygiene Tips</h2>
+      <p>Keep a consistent schedule, create a dark and cool sleep environment, limit screen time before bed, and avoid caffeine after 2 PM.</p>
+    `,
+    featured: false,
+  },
+  {
+    id: "7",
+    title: "The Healing Power of Nature: Ecotherapy Explained",
+    excerpt: "How spending time in nature can reduce stress, improve mood, and support mental health recovery.",
+    category: "Wellness",
+    author: "Dr. James Wilson",
+    authorImage: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=100&h=100&fit=crop&crop=face",
+    date: "Jan 1, 2026",
+    readTime: "5 min read",
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=500&fit=crop",
+    content: `
+      <p>Ecotherapy, also known as nature therapy, recognizes that humans have an innate need to connect with the natural world for optimal mental health.</p>
+      
+      <h2>The Science of Nature</h2>
+      <p>Studies show that just 20 minutes in nature significantly lowers cortisol levels. Forest bathing (shinrin-yoku) has been shown to boost immune function and reduce anxiety.</p>
+      
+      <h2>Practical Applications</h2>
+      <p>You don't need to hike mountains—even tending houseplants, sitting in a park, or listening to nature sounds can provide benefits.</p>
+    `,
+    featured: false,
+  },
+  {
+    id: "8",
+    title: "Building Resilience: Bouncing Back from Adversity",
+    excerpt: "Learn the key factors that contribute to psychological resilience and how to strengthen your ability to cope with challenges.",
+    category: "Self-Care",
+    author: "Dr. Emily Chen",
+    authorImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop&crop=face",
+    date: "Dec 28, 2025",
+    readTime: "7 min read",
+    image: "https://images.unsplash.com/photo-1469571486292-b53601010376?w=800&h=500&fit=crop",
+    content: `
+      <p>Resilience isn't about avoiding stress—it's about developing the capacity to recover from difficulties and adapt to change.</p>
+      
+      <h2>The Pillars of Resilience</h2>
+      <p>Strong social connections, a sense of purpose, emotional awareness, and problem-solving skills are key components of psychological resilience.</p>
+      
+      <h2>Building Your Resilience</h2>
+      <p>Practice self-compassion, maintain perspective, develop healthy coping strategies, and cultivate meaningful relationships.</p>
+    `,
+    featured: false,
+  },
+  {
+    id: "9",
+    title: "Digital Detox: Managing Screen Time for Better Mental Health",
+    excerpt: "Understanding the impact of constant connectivity on our mental health and strategies for a healthier digital life.",
+    category: "Self-Care",
+    author: "Dr. Rachel Green",
+    authorImage: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
+    date: "Dec 25, 2025",
+    readTime: "6 min read",
+    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=500&fit=crop",
+    content: `
+      <p>Our constant connection to devices is taking a toll on our mental health. Understanding this relationship is the first step to finding balance.</p>
+      
+      <h2>The Impact of Social Media</h2>
+      <p>Social comparison, FOMO, and the dopamine hit of notifications can contribute to anxiety, depression, and decreased self-esteem.</p>
+      
+      <h2>Healthy Digital Habits</h2>
+      <p>Set boundaries around phone use, designate tech-free times, curate your social media feeds, and replace scrolling with meaningful activities.</p>
+    `,
+    featured: false,
+  },
+  {
+    id: "10",
+    title: "Understanding Depression: Beyond Feeling Sad",
+    excerpt: "A comprehensive look at depression, its many forms, and why professional treatment can be life-changing.",
+    category: "Depression",
+    author: "Dr. Marcus Johnson",
+    authorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+    date: "Dec 22, 2025",
+    readTime: "10 min read",
+    image: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?w=800&h=500&fit=crop",
+    content: `
+      <p>Depression is more than just feeling sad—it's a complex condition that affects every aspect of life and requires proper understanding and treatment.</p>
+      
+      <h2>Recognizing Depression</h2>
+      <p>Symptoms include persistent low mood, loss of interest, changes in sleep and appetite, difficulty concentrating, and in severe cases, thoughts of self-harm.</p>
+      
+      <h2>Types of Depression</h2>
+      <p>Major depressive disorder, persistent depressive disorder, seasonal affective disorder, and postpartum depression all require different approaches.</p>
+      
+      <h2>Hope Through Treatment</h2>
+      <p>Depression is highly treatable. A combination of therapy, medication, lifestyle changes, and support can lead to significant improvement.</p>
+    `,
+    featured: false,
+  },
+  {
+    id: "11",
+    title: "The Mind-Gut Connection: How Diet Affects Mental Health",
+    excerpt: "Exploring the fascinating relationship between what we eat and how we feel emotionally.",
+    category: "Wellness",
+    author: "Dr. Sophia Chen",
+    authorImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face",
+    date: "Dec 20, 2025",
+    readTime: "8 min read",
+    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=500&fit=crop",
+    content: `
+      <p>The gut is often called our "second brain" for good reason. The foods we eat directly impact our mental health through the gut-brain axis.</p>
+      
+      <h2>The Microbiome and Mood</h2>
+      <p>90% of serotonin is produced in the gut. A healthy, diverse microbiome supports the production of neurotransmitters that regulate mood.</p>
+      
+      <h2>Foods for Mental Health</h2>
+      <p>Omega-3 fatty acids, fermented foods, fruits, vegetables, and whole grains support brain health. Processed foods and sugar can increase inflammation and worsen symptoms.</p>
+    `,
+    featured: false,
+  },
+  {
+    id: "12",
+    title: "Trauma-Informed Self-Care: Healing at Your Own Pace",
+    excerpt: "Understanding trauma responses and gentle approaches to self-care for those on a healing journey.",
+    category: "Therapy",
+    author: "Dr. Michael Brooks",
+    authorImage: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face",
+    date: "Dec 18, 2025",
+    readTime: "9 min read",
+    image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&h=500&fit=crop",
+    content: `
+      <p>Healing from trauma is not linear. Understanding trauma responses and practicing gentle self-care is essential for sustainable recovery.</p>
+      
+      <h2>Understanding Your Responses</h2>
+      <p>Trauma responses (fight, flight, freeze, fawn) are your nervous system's way of protecting you. They're not character flaws—they're survival adaptations.</p>
+      
+      <h2>Gentle Approaches</h2>
+      <p>Somatic practices, grounding techniques, and creating safety in your environment can support healing without retraumatization.</p>
+    `,
     featured: false,
   },
 ];
 
-const categories = ["All", "Self-Care", "Anxiety", "Therapy", "Mindfulness", "Awareness", "Wellness"];
+const categories = ["All", "Self-Care", "Anxiety", "Therapy", "Mindfulness", "Awareness", "Wellness", "Depression"];
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
