@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon, Clock, Video, Shield, User, Mail, Phone, CheckCircle2, Sparkles, Users, Heart, Brain, Smile, Leaf } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Video, Shield, User, Mail, Phone, CheckCircle2, Sparkles, Users, Heart, Brain, Smile, Leaf, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
     color: "bg-blue-500",
     icon: Brain,
+    rating: 4.9,
+    reviews: 247,
   },
   {
     id: "dr-michael-brooks",
@@ -28,6 +30,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
     color: "bg-purple-500",
     icon: Shield,
+    rating: 4.8,
+    reviews: 189,
   },
   {
     id: "dr-sarah-johnson",
@@ -38,6 +42,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face",
     color: "bg-pink-500",
     icon: Heart,
+    rating: 4.9,
+    reviews: 312,
   },
   {
     id: "dr-robert-kim",
@@ -48,6 +54,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150&h=150&fit=crop&crop=face",
     color: "bg-amber-500",
     icon: Sparkles,
+    rating: 4.7,
+    reviews: 156,
   },
   {
     id: "dr-lisa-martinez",
@@ -58,6 +66,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face",
     color: "bg-teal-500",
     icon: Leaf,
+    rating: 4.8,
+    reviews: 203,
   },
   {
     id: "dr-james-wilson",
@@ -68,6 +78,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face",
     color: "bg-green-500",
     icon: Smile,
+    rating: 4.9,
+    reviews: 178,
   },
   {
     id: "dr-amanda-patel",
@@ -78,6 +90,8 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=150&h=150&fit=crop&crop=face",
     color: "bg-indigo-500",
     icon: Brain,
+    rating: 4.8,
+    reviews: 134,
   },
   {
     id: "dr-david-nguyen",
@@ -88,6 +102,56 @@ const therapists = [
     image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop&crop=face",
     color: "bg-rose-500",
     icon: Heart,
+    rating: 4.9,
+    reviews: 267,
+  },
+  {
+    id: "dr-rachel-green",
+    name: "Dr. Rachel Green",
+    title: "Neuropsychologist",
+    specialty: "ADHD & Executive Function",
+    bio: "Specializes in ADHD assessment and cognitive strategies for improved focus and productivity.",
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face",
+    color: "bg-cyan-500",
+    icon: Brain,
+    rating: 4.9,
+    reviews: 189,
+  },
+  {
+    id: "dr-marcus-johnson",
+    name: "Dr. Marcus Johnson",
+    title: "Grief Counselor",
+    specialty: "Loss & Bereavement",
+    bio: "Helping individuals and families navigate the complex journey of grief and healing.",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    color: "bg-slate-500",
+    icon: Heart,
+    rating: 4.8,
+    reviews: 145,
+  },
+  {
+    id: "dr-sophia-chen",
+    name: "Dr. Sophia Chen",
+    title: "Eating Disorder Specialist",
+    specialty: "Eating Disorders & Body Image",
+    bio: "Evidence-based treatment for eating disorders with a compassionate, holistic approach.",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
+    color: "bg-orange-500",
+    icon: Heart,
+    rating: 4.9,
+    reviews: 198,
+  },
+  {
+    id: "dr-william-taylor",
+    name: "Dr. William Taylor",
+    title: "Sleep Specialist",
+    specialty: "Insomnia & Sleep Disorders",
+    bio: "CBT-I certified specialist helping clients achieve restorative sleep and better mental health.",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
+    color: "bg-violet-500",
+    icon: Sparkles,
+    rating: 4.7,
+    reviews: 112,
   },
 ];
 
@@ -404,6 +468,11 @@ const AppointmentScheduler = () => {
                           </div>
                           <p className="font-semibold text-foreground text-sm">{therapist.name}</p>
                           <p className="text-xs text-primary font-medium">{therapist.specialty}</p>
+                          <div className="flex items-center gap-1 mt-1">
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                            <span className="text-xs font-medium text-foreground">{therapist.rating}</span>
+                            <span className="text-[10px] text-muted-foreground">({therapist.reviews})</span>
+                          </div>
                           <p className="text-[11px] text-muted-foreground mt-2 line-clamp-2">{therapist.bio}</p>
                         </div>
                       </motion.button>

@@ -1,7 +1,7 @@
 import { MessageSquare, Users, Heart, Shield, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -47,15 +47,6 @@ const itemVariants = {
 };
 
 const CommunitySection = () => {
-  const { toast } = useToast();
-
-  const handleJoinCommunity = () => {
-    toast({
-      title: "Welcome to the Community! 🌟",
-      description: "Thank you for your interest! Community features are coming soon. We'll notify you when they're ready.",
-    });
-  };
-
   return (
     <section className="py-24 bg-background relative overflow-hidden" id="community">
       {/* Background decorations */}
@@ -132,15 +123,17 @@ const CommunitySection = () => {
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button variant="hero" size="lg" onClick={handleJoinCommunity} className="group">
-                Join the Community
-                <motion.span
-                  animate={{ rotate: [0, 15, -15, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="ml-2"
-                >
-                  <Sparkles className="w-4 h-4" />
-                </motion.span>
+              <Button variant="hero" size="lg" className="group" asChild>
+                <Link to="/community">
+                  Join the Community
+                  <motion.span
+                    animate={{ rotate: [0, 15, -15, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="ml-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                  </motion.span>
+                </Link>
               </Button>
             </motion.div>
           </motion.div>
