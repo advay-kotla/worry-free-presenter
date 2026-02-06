@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Clock, ArrowRight, ArrowLeft, Search, Tag, User, Calendar, Heart, Share2, Bookmark, X } from "lucide-react";
+import { 
+  BookOpen, Clock, ArrowRight, ArrowLeft, Search, Tag, User, Calendar, Heart, Share2, Bookmark, X,
+  Flame, Trophy, Zap, Star, Award, TrendingUp, Target, Sparkles, CheckCircle2
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useToast } from "@/hooks/use-toast";
 
 const blogPosts = [
   {
@@ -38,6 +43,8 @@ const blogPosts = [
     readTime: "5 min read",
     image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=500&fit=crop",
     featured: true,
+    xp: 50,
+    difficulty: "beginner",
   },
   {
     id: "2",
@@ -65,6 +72,8 @@ const blogPosts = [
     readTime: "8 min read",
     image: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=500&fit=crop",
     featured: false,
+    xp: 80,
+    difficulty: "intermediate",
   },
   {
     id: "3",
@@ -89,6 +98,8 @@ const blogPosts = [
     readTime: "6 min read",
     image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=500&fit=crop",
     featured: false,
+    xp: 60,
+    difficulty: "beginner",
   },
   {
     id: "4",
@@ -113,6 +124,8 @@ const blogPosts = [
       <p>Start with just 5 minutes daily and gradually increase. Consistency matters more than duration—a daily 10-minute practice beats an occasional hour-long session.</p>
     `,
     featured: false,
+    xp: 70,
+    difficulty: "beginner",
   },
   {
     id: "5",
@@ -137,6 +150,8 @@ const blogPosts = [
       <p>Normalizing help-seeking, providing male-focused resources, and celebrating men who speak openly about mental health can all contribute to breaking down barriers.</p>
     `,
     featured: false,
+    xp: 90,
+    difficulty: "intermediate",
   },
   {
     id: "6",
@@ -158,6 +173,8 @@ const blogPosts = [
       <p>Keep a consistent schedule, create a dark and cool sleep environment, limit screen time before bed, and avoid caffeine after 2 PM.</p>
     `,
     featured: false,
+    xp: 55,
+    difficulty: "beginner",
   },
   {
     id: "7",
@@ -179,6 +196,8 @@ const blogPosts = [
       <p>You don't need to hike mountains—even tending houseplants, sitting in a park, or listening to nature sounds can provide benefits.</p>
     `,
     featured: false,
+    xp: 45,
+    difficulty: "beginner",
   },
   {
     id: "8",
@@ -200,6 +219,8 @@ const blogPosts = [
       <p>Practice self-compassion, maintain perspective, develop healthy coping strategies, and cultivate meaningful relationships.</p>
     `,
     featured: false,
+    xp: 75,
+    difficulty: "intermediate",
   },
   {
     id: "9",
@@ -221,6 +242,8 @@ const blogPosts = [
       <p>Set boundaries around phone use, designate tech-free times, curate your social media feeds, and replace scrolling with meaningful activities.</p>
     `,
     featured: false,
+    xp: 60,
+    difficulty: "beginner",
   },
   {
     id: "10",
@@ -245,6 +268,8 @@ const blogPosts = [
       <p>Depression is highly treatable. A combination of therapy, medication, lifestyle changes, and support can lead to significant improvement.</p>
     `,
     featured: false,
+    xp: 100,
+    difficulty: "advanced",
   },
   {
     id: "11",
@@ -266,6 +291,8 @@ const blogPosts = [
       <p>Omega-3 fatty acids, fermented foods, fruits, vegetables, and whole grains support brain health. Processed foods and sugar can increase inflammation and worsen symptoms.</p>
     `,
     featured: false,
+    xp: 85,
+    difficulty: "intermediate",
   },
   {
     id: "12",
@@ -287,15 +314,55 @@ const blogPosts = [
       <p>Somatic practices, grounding techniques, and creating safety in your environment can support healing without retraumatization.</p>
     `,
     featured: false,
+    xp: 95,
+    difficulty: "advanced",
   },
 ];
 
 const categories = ["All", "Self-Care", "Anxiety", "Therapy", "Mindfulness", "Awareness", "Wellness", "Depression"];
 
+const achievements = [
+  { id: "first-read", name: "First Steps", description: "Read your first article", icon: BookOpen, unlocked: true, xp: 10 },
+  { id: "streak-3", name: "Consistency", description: "3-day reading streak", icon: Flame, unlocked: true, xp: 30 },
+  { id: "explorer", name: "Explorer", description: "Read from 5 categories", icon: Target, unlocked: false, xp: 50 },
+  { id: "scholar", name: "Scholar", description: "Read 10 articles", icon: Award, unlocked: false, xp: 100 },
+  { id: "master", name: "Wellness Master", description: "Complete all articles", icon: Trophy, unlocked: false, xp: 500 },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.4, ease: "easeOut" as const } 
+  },
+};
+
+const floatVariants = {
+  animate: {
+    y: [0, -10, 0],
+    transition: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+  },
+};
+
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<typeof blogPosts[0] | null>(null);
+  const [readArticles, setReadArticles] = useState<string[]>(["1", "3"]);
+  const [userXP, setUserXP] = useState(110);
+  const [showXPGain, setShowXPGain] = useState(false);
+  const [gainedXP, setGainedXP] = useState(0);
+  const { toast } = useToast();
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
@@ -305,39 +372,218 @@ const Blog = () => {
   });
 
   const featuredPost = blogPosts.find(post => post.featured);
+  const userLevel = Math.floor(userXP / 100) + 1;
+  const xpToNextLevel = 100 - (userXP % 100);
+  const progressToNext = (userXP % 100);
+
+  const handleReadArticle = (post: typeof blogPosts[0]) => {
+    if (!readArticles.includes(post.id)) {
+      setReadArticles([...readArticles, post.id]);
+      setGainedXP(post.xp);
+      setUserXP(prev => prev + post.xp);
+      setShowXPGain(true);
+      setTimeout(() => setShowXPGain(false), 2000);
+      
+      toast({
+        title: `+${post.xp} XP Earned! 🎉`,
+        description: `You completed "${post.title}"`,
+      });
+    }
+    setSelectedArticle(post);
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "beginner": return "bg-green-500/10 text-green-600 border-green-500/20";
+      case "intermediate": return "bg-amber-500/10 text-amber-600 border-amber-500/20";
+      case "advanced": return "bg-red-500/10 text-red-600 border-red-500/20";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       <main className="pt-20">
-        {/* Hero Section */}
+        {/* Hero Section with Gamification */}
         <section className="py-16 gradient-calm relative overflow-hidden">
+          {/* Animated background elements */}
           <motion.div
-            animate={{ y: [0, -20, 0] }}
+            animate={{ y: [0, -30, 0], rotate: [0, 5, 0] }}
             transition={{ duration: 10, repeat: Infinity }}
             className="absolute top-10 right-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl"
           />
+          <motion.div
+            animate={{ y: [0, 20, 0], x: [0, -20, 0] }}
+            transition={{ duration: 15, repeat: Infinity }}
+            className="absolute bottom-10 left-10 w-80 h-80 bg-accent/10 rounded-full blur-3xl"
+          />
+          
+          {/* Floating particles */}
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0 }}
+              animate={{ 
+                opacity: [0.3, 0.7, 0.3],
+                y: [0, -50, 0],
+                x: [0, Math.random() * 30 - 15, 0],
+              }}
+              transition={{ duration: 5 + i, repeat: Infinity, delay: i * 0.5 }}
+              className="absolute w-2 h-2 bg-primary rounded-full"
+              style={{ left: `${20 + i * 15}%`, top: `${30 + i * 10}%` }}
+            />
+          ))}
           
           <div className="container mx-auto px-4 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center max-w-3xl mx-auto"
+              className="text-center max-w-3xl mx-auto mb-8"
             >
-              <Badge className="mb-4 bg-primary/10 text-primary border-0">
-                <BookOpen className="w-3 h-3 mr-1" />
-                Mental Health Blog
-              </Badge>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4"
+              >
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Learn & Grow</span>
+              </motion.div>
+              
               <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
-                Insights for Your Wellness Journey
+                Mental Health <span className="text-primary">Academy</span>
               </h1>
               <p className="text-lg text-muted-foreground mb-8">
-                Expert articles, personal stories, and practical tips to support your mental health.
+                Earn XP, unlock achievements, and level up your mental wellness knowledge.
               </p>
-              
-              {/* Search */}
-              <div className="relative max-w-md mx-auto">
+            </motion.div>
+
+            {/* User Stats Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="max-w-2xl mx-auto"
+            >
+              <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border shadow-elevated">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-4">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="relative"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-primary-foreground">{userLevel}</span>
+                      </div>
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute -top-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center"
+                      >
+                        <Zap className="w-3 h-3 text-accent-foreground" />
+                      </motion.div>
+                    </motion.div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Your Level</p>
+                      <p className="text-xl font-bold text-foreground">Wellness Explorer</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-6">
+                    <div className="text-center">
+                      <motion.p
+                        key={userXP}
+                        initial={{ scale: 1.2 }}
+                        animate={{ scale: 1 }}
+                        className="text-2xl font-bold text-primary"
+                      >
+                        {userXP}
+                      </motion.p>
+                      <p className="text-xs text-muted-foreground">Total XP</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-foreground">{readArticles.length}</p>
+                      <p className="text-xs text-muted-foreground">Articles Read</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-foreground">2</p>
+                      <p className="text-xs text-muted-foreground">Achievements</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Progress to Level {userLevel + 1}</span>
+                    <span className="text-primary font-medium">{xpToNextLevel} XP needed</span>
+                  </div>
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    className="origin-left"
+                  >
+                    <Progress value={progressToNext} className="h-3" />
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* XP Gain Animation */}
+            <AnimatePresence>
+              {showXPGain && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20, scale: 0.5 }}
+                  animate={{ opacity: 1, y: -50, scale: 1 }}
+                  exit={{ opacity: 0, y: -100 }}
+                  className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50"
+                >
+                  <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-bold text-xl shadow-lg">
+                    +{gainedXP} XP
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Achievements Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-6 max-w-3xl mx-auto"
+            >
+              <p className="text-sm text-muted-foreground mb-3 text-center">Recent Achievements</p>
+              <div className="flex justify-center gap-3 flex-wrap">
+                {achievements.slice(0, 4).map((achievement, index) => (
+                  <motion.div
+                    key={achievement.id}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    whileHover={{ scale: 1.1, y: -5 }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full border ${
+                      achievement.unlocked 
+                        ? "bg-primary/10 border-primary/30 text-primary" 
+                        : "bg-muted/50 border-border text-muted-foreground opacity-60"
+                    }`}
+                  >
+                    <achievement.icon className="w-4 h-4" />
+                    <span className="text-sm font-medium">{achievement.name}</span>
+                    {achievement.unlocked && <CheckCircle2 className="w-4 h-4" />}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Search */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-8 max-w-md mx-auto"
+            >
+              <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   placeholder="Search articles..."
@@ -350,22 +596,37 @@ const Blog = () => {
           </div>
         </section>
 
-        {/* Categories */}
+        {/* Categories with animations */}
         <section className="py-6 border-b border-border sticky top-16 bg-background/95 backdrop-blur-sm z-30">
           <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="rounded-full shrink-0"
-                >
-                  {category}
-                </Button>
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide"
+            >
+              {categories.map((category, index) => (
+                <motion.div key={category} variants={itemVariants}>
+                  <Button
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category)}
+                    className="rounded-full shrink-0 gap-2"
+                  >
+                    {selectedCategory === category && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring" }}
+                      >
+                        <Sparkles className="w-3 h-3" />
+                      </motion.span>
+                    )}
+                    {category}
+                  </Button>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -377,7 +638,7 @@ const Blog = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -4 }}
-                onClick={() => setSelectedArticle(featuredPost)}
+                onClick={() => handleReadArticle(featuredPost)}
                 className="relative rounded-3xl overflow-hidden cursor-pointer group"
               >
                 <div className="aspect-[21/9] relative">
@@ -388,10 +649,34 @@ const Blog = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                   
-                  <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
-                    <Badge className="w-fit mb-4 bg-primary text-primary-foreground">
-                      Featured
+                  {/* XP Badge */}
+                  <motion.div
+                    variants={floatVariants}
+                    animate="animate"
+                    className="absolute top-4 right-4"
+                  >
+                    <Badge className="bg-primary text-primary-foreground gap-1 py-1.5">
+                      <Zap className="w-3 h-3" />
+                      +{featuredPost.xp} XP
                     </Badge>
+                  </motion.div>
+                  
+                  <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Badge className="bg-accent text-accent-foreground">
+                        <Trophy className="w-3 h-3 mr-1" />
+                        Featured
+                      </Badge>
+                      <Badge className={getDifficultyColor(featuredPost.difficulty || "beginner")}>
+                        {featuredPost.difficulty}
+                      </Badge>
+                      {readArticles.includes(featuredPost.id) && (
+                        <Badge className="bg-green-500/20 text-green-400">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Completed
+                        </Badge>
+                      )}
+                    </div>
                     <h2 className="text-2xl md:text-4xl font-display font-bold text-white mb-4 max-w-2xl">
                       {featuredPost.title}
                     </h2>
@@ -413,29 +698,67 @@ const Blog = () => {
           </section>
         )}
 
-        {/* Blog Grid */}
+        {/* Blog Grid with gamification */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
               {filteredPosts.filter(p => !p.featured || selectedCategory !== "All" || searchQuery).map((post, index) => (
                 <motion.article
                   key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8 }}
-                  onClick={() => setSelectedArticle(post)}
-                  className="bg-card rounded-2xl overflow-hidden border border-border group cursor-pointer"
+                  variants={itemVariants}
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  onClick={() => handleReadArticle(post)}
+                  className={`bg-card rounded-2xl overflow-hidden border group cursor-pointer relative ${
+                    readArticles.includes(post.id) 
+                      ? "border-primary/30" 
+                      : "border-border"
+                  }`}
                 >
+                  {/* Completion indicator */}
+                  {readArticles.includes(post.id) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-4 left-4 z-10"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                        <CheckCircle2 className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   <div className="aspect-video relative overflow-hidden">
                     <img
                       src={post.image}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <Badge className="absolute top-4 left-4 bg-background/90 text-foreground backdrop-blur-sm">
-                      {post.category}
-                    </Badge>
+                    
+                    {/* XP Badge */}
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      className="absolute top-4 right-4"
+                    >
+                      <Badge className="bg-background/90 text-foreground backdrop-blur-sm gap-1">
+                        <Zap className="w-3 h-3 text-primary" />
+                        +{post.xp} XP
+                      </Badge>
+                    </motion.div>
+                    
+                    <div className="absolute bottom-4 left-4 flex gap-2">
+                      <Badge className="bg-background/90 text-foreground backdrop-blur-sm">
+                        {post.category}
+                      </Badge>
+                      <Badge className={`backdrop-blur-sm ${getDifficultyColor(post.difficulty || "beginner")}`}>
+                        {post.difficulty}
+                      </Badge>
+                    </div>
                   </div>
                   
                   <div className="p-6">
@@ -464,21 +787,26 @@ const Blog = () => {
                         <img src={post.authorImage} alt="" className="w-8 h-8 rounded-full" />
                         <span className="text-sm font-medium text-foreground">{post.author}</span>
                       </div>
-                      <Button variant="ghost" size="sm" className="text-primary">
-                        Read <ArrowRight className="w-4 h-4 ml-1" />
+                      <Button variant="ghost" size="sm" className="text-primary gap-1">
+                        {readArticles.includes(post.id) ? "Review" : "Read"}
+                        <ArrowRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
                 </motion.article>
               ))}
-            </div>
+            </motion.div>
 
             {filteredPosts.length === 0 && (
-              <div className="text-center py-16">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16"
+              >
                 <BookOpen className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">No articles found</h3>
                 <p className="text-muted-foreground">Try adjusting your search or category filter.</p>
-              </div>
+              </motion.div>
             )}
           </div>
         </section>
@@ -507,6 +835,10 @@ const Blog = () => {
                       Back to Blog
                     </Button>
                     <div className="flex items-center gap-2">
+                      <Badge className="bg-primary/10 text-primary gap-1">
+                        <Zap className="w-3 h-3" />
+                        +{selectedArticle.xp} XP
+                      </Badge>
                       <Button variant="ghost" size="icon">
                         <Bookmark className="w-5 h-5" />
                       </Button>
@@ -521,16 +853,33 @@ const Blog = () => {
 
                   {/* Article Content */}
                   <article className="bg-card rounded-3xl overflow-hidden border border-border">
-                    <div className="aspect-video">
+                    <div className="aspect-video relative">
                       <img
                         src={selectedArticle.image}
                         alt={selectedArticle.title}
                         className="w-full h-full object-cover"
                       />
+                      {readArticles.includes(selectedArticle.id) && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-4 right-4"
+                        >
+                          <Badge className="bg-green-500 text-white gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Completed
+                          </Badge>
+                        </motion.div>
+                      )}
                     </div>
                     
                     <div className="p-8 md:p-12">
-                      <Badge className="mb-4">{selectedArticle.category}</Badge>
+                      <div className="flex gap-2 mb-4">
+                        <Badge>{selectedArticle.category}</Badge>
+                        <Badge className={getDifficultyColor(selectedArticle.difficulty || "beginner")}>
+                          {selectedArticle.difficulty}
+                        </Badge>
+                      </div>
                       
                       <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
                         {selectedArticle.title}

@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon, Clock, Video, Shield, User, Mail, Phone, CheckCircle2, Sparkles, Users, Heart, Brain, Smile, Leaf, Star } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Video, Shield, User, Mail, Phone, CheckCircle2, Sparkles, Users, Heart, Brain, Smile, Leaf, Star, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar } from "@/components/ui/calendar";
 import { format, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const therapists = [
   {
@@ -469,11 +470,18 @@ const AppointmentScheduler = () => {
                           <p className="font-semibold text-foreground text-sm">{therapist.name}</p>
                           <p className="text-xs text-primary font-medium">{therapist.specialty}</p>
                           <div className="flex items-center gap-1 mt-1">
-                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                            <Star className="w-3 h-3 fill-warning text-warning" />
                             <span className="text-xs font-medium text-foreground">{therapist.rating}</span>
                             <span className="text-[10px] text-muted-foreground">({therapist.reviews})</span>
                           </div>
                           <p className="text-[11px] text-muted-foreground mt-2 line-clamp-2">{therapist.bio}</p>
+                          <Link 
+                            to={`/therapist/${therapist.id}`} 
+                            className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline mt-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            View Profile <ExternalLink className="w-3 h-3" />
+                          </Link>
                         </div>
                       </motion.button>
                     ))}
