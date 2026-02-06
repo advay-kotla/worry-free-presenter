@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   MessageSquare, Users, Heart, Shield, Sparkles, Search, 
   ThumbsUp, MessageCircle, Clock, User, Star, CheckCircle2,
-  Flame, TrendingUp, BookOpen, Award, Calendar, ArrowRight
+  Flame, TrendingUp, BookOpen, Award, Calendar, ArrowRight, Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -216,9 +216,43 @@ const communityStats = [
 
 const forumCategories = ["All", "Anxiety", "Depression", "Recovery", "Mindfulness", "Relationships", "Therapy", "Self-Care"];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.4, ease: "easeOut" as const } 
+  },
+};
+
+const floatVariants = {
+  animate: {
+    y: [0, -8, 0],
+    transition: { duration: 3, repeat: Infinity, ease: "easeInOut" as const },
+  },
+};
+
+const pulseVariants = {
+  animate: {
+    scale: [1, 1.05, 1],
+    opacity: [0.7, 1, 0.7],
+    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" as const },
+  },
+};
+
 const Community = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("forums");
   const { toast } = useToast();
 
   const filteredTopics = forumTopics.filter(topic => {
@@ -247,18 +281,47 @@ const Community = () => {
       <Navbar />
       
       <main className="pt-20">
-        {/* Hero Section */}
+        {/* Hero Section with enhanced animations */}
         <section className="py-16 gradient-calm relative overflow-hidden">
+          {/* Animated background elements */}
           <motion.div
-            animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+            animate={{ x: [0, 30, 0], y: [0, -20, 0], rotate: [0, 5, 0] }}
             transition={{ duration: 20, repeat: Infinity }}
             className="absolute top-10 left-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl"
           />
           <motion.div
-            animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
+            animate={{ x: [0, -40, 0], y: [0, 30, 0], rotate: [0, -5, 0] }}
             transition={{ duration: 25, repeat: Infinity }}
             className="absolute bottom-10 right-10 w-80 h-80 bg-accent/10 rounded-full blur-3xl"
           />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl"
+          />
+          
+          {/* Floating hearts */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ 
+                opacity: [0, 0.6, 0],
+                y: [-20, -150, -250],
+                x: [0, Math.sin(i) * 30, 0],
+              }}
+              transition={{ 
+                duration: 4 + i, 
+                repeat: Infinity, 
+                delay: i * 0.8,
+                ease: "easeOut" as const
+              }}
+              className="absolute"
+              style={{ left: `${15 + i * 15}%`, bottom: "20%" }}
+            >
+              <Heart className="w-4 h-4 text-pink-400 fill-pink-400" />
+            </motion.div>
+          ))}
           
           <div className="container mx-auto px-4 relative z-10">
             <motion.div
@@ -266,331 +329,510 @@ const Community = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-center max-w-3xl mx-auto"
             >
-              <Badge className="mb-4 bg-primary/10 text-primary border-0">
-                <Users className="w-3 h-3 mr-1" />
-                You're Not Alone
-              </Badge>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
-                Welcome to Our Community
-              </h1>
-              <p className="text-lg text-muted-foreground mb-8">
-                Connect with thousands of people who understand. Share your journey, find support, and grow together.
-              </p>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+              >
+                <Badge className="mb-4 bg-primary/10 text-primary border-0 py-2 px-4">
+                  <motion.span variants={pulseVariants} animate="animate">
+                    <Users className="w-4 h-4 mr-2 inline" />
+                  </motion.span>
+                  You're Not Alone
+                </Badge>
+              </motion.div>
               
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4"
+              >
+                Welcome to Our{" "}
+                <motion.span
+                  animate={{ 
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{ duration: 5, repeat: Infinity }}
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto]"
+                >
+                  Community
+                </motion.span>
+              </motion.h1>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-lg text-muted-foreground mb-8"
+              >
+                Connect with thousands of people who understand. Share your journey, find support, and grow together.
+              </motion.p>
+              
+              {/* Stats with staggered animation */}
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12"
+              >
                 {communityStats.map((stat, index) => (
                   <motion.div
                     key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border"
+                    variants={itemVariants}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border shadow-soft hover:shadow-elevated transition-all cursor-default"
                   >
-                    <stat.icon className={`w-6 h-6 ${stat.color} mx-auto mb-2`} />
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                    <motion.div
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 4, repeat: Infinity, delay: index * 0.2 }}
+                    >
+                      <stat.icon className={`w-6 h-6 ${stat.color} mx-auto mb-2`} />
+                    </motion.div>
+                    <motion.p
+                      initial={{ scale: 0.5 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
+                      className="text-2xl font-bold text-foreground"
+                    >
+                      {stat.value}
+                    </motion.p>
                     <p className="text-sm text-muted-foreground">{stat.label}</p>
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </section>
 
-        {/* Main Content */}
+        {/* Main Content with animated tabs */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <Tabs defaultValue="forums" className="space-y-8">
-              <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 h-12">
-                <TabsTrigger value="forums" className="gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  <span className="hidden sm:inline">Forums</span>
-                </TabsTrigger>
-                <TabsTrigger value="groups" className="gap-2">
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Support Groups</span>
-                </TabsTrigger>
-                <TabsTrigger value="peers" className="gap-2">
-                  <Heart className="w-4 h-4" />
-                  <span className="hidden sm:inline">Peer Support</span>
-                </TabsTrigger>
-              </TabsList>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 h-14 p-1 bg-secondary/50 rounded-2xl">
+                  {[
+                    { value: "forums", icon: MessageSquare, label: "Forums" },
+                    { value: "groups", icon: Users, label: "Support Groups" },
+                    { value: "peers", icon: Heart, label: "Peer Support" },
+                  ].map((tab) => (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="gap-2 rounded-xl data-[state=active]:shadow-md transition-all"
+                    >
+                      <motion.span
+                        animate={activeTab === tab.value ? { rotate: [0, 10, -10, 0] } : {}}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <tab.icon className="w-4 h-4" />
+                      </motion.span>
+                      <span className="hidden sm:inline">{tab.label}</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </motion.div>
 
               {/* Forums Tab */}
               <TabsContent value="forums" className="space-y-6">
-                {/* Search & Filter */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Search discussions..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 h-12 rounded-xl"
-                    />
-                  </div>
-                  <Button className="h-12 gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    Start Discussion
-                  </Button>
-                </div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key="forums"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Search & Filter */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative flex-1"
+                      >
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Input
+                          placeholder="Search discussions..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-12 h-12 rounded-xl"
+                        />
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button className="h-12 gap-2">
+                          <Sparkles className="w-4 h-4" />
+                          Start Discussion
+                        </Button>
+                      </motion.div>
+                    </div>
 
-                {/* Categories */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                  {forumCategories.map((category) => (
-                    <Button
-                      key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedCategory(category)}
-                      className="rounded-full shrink-0"
-                    >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
-
-                {/* Topics List */}
-                <div className="space-y-4">
-                  {filteredTopics.map((topic, index) => (
+                    {/* Categories with animation */}
                     <motion.div
-                      key={topic.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      whileHover={{ x: 4 }}
-                      className="bg-card rounded-2xl p-5 border border-border hover:border-primary/50 transition-all cursor-pointer group"
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="flex items-center gap-2 overflow-x-auto pb-2"
                     >
-                      <div className="flex gap-4">
-                        <Avatar className="w-12 h-12 ring-2 ring-primary/20">
-                          <AvatarImage src={topic.avatar} />
-                          <AvatarFallback>{topic.author[0]}</AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                {topic.pinned && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    <Flame className="w-3 h-3 mr-1" />
-                                    Trending
-                                  </Badge>
-                                )}
-                                <Badge variant="outline" className="text-xs">
-                                  {topic.category}
-                                </Badge>
+                      {forumCategories.map((category) => (
+                        <motion.div key={category} variants={itemVariants}>
+                          <Button
+                            variant={selectedCategory === category ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedCategory(category)}
+                            className="rounded-full shrink-0"
+                          >
+                            {category}
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+
+                    {/* Topics List with staggered animation */}
+                    <motion.div
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="space-y-4"
+                    >
+                      {filteredTopics.map((topic, index) => (
+                        <motion.div
+                          key={topic.id}
+                          variants={itemVariants}
+                          whileHover={{ x: 8, transition: { duration: 0.2 } }}
+                          className="bg-card rounded-2xl p-5 border border-border hover:border-primary/50 hover:shadow-elevated transition-all cursor-pointer group"
+                        >
+                          <div className="flex gap-4">
+                            <motion.div whileHover={{ scale: 1.1 }}>
+                              <Avatar className="w-12 h-12 ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all">
+                                <AvatarImage src={topic.avatar} />
+                                <AvatarFallback>{topic.author[0]}</AvatarFallback>
+                              </Avatar>
+                            </motion.div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    {topic.pinned && (
+                                      <motion.div
+                                        animate={{ scale: [1, 1.1, 1] }}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                      >
+                                        <Badge variant="secondary" className="text-xs bg-orange-500/10 text-orange-500 border-orange-500/20">
+                                          <Flame className="w-3 h-3 mr-1" />
+                                          Trending
+                                        </Badge>
+                                      </motion.div>
+                                    )}
+                                    <Badge variant="outline" className="text-xs">
+                                      {topic.category}
+                                    </Badge>
+                                  </div>
+                                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                                    {topic.title}
+                                  </h3>
+                                </div>
                               </div>
-                              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                                {topic.title}
-                              </h3>
+                              
+                              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                                {topic.excerpt}
+                              </p>
+                              
+                              <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <User className="w-3 h-3" />
+                                  {topic.author}
+                                </span>
+                                <motion.span
+                                  whileHover={{ scale: 1.1 }}
+                                  className="flex items-center gap-1"
+                                >
+                                  <MessageCircle className="w-3 h-3" />
+                                  {topic.replies} replies
+                                </motion.span>
+                                <motion.span
+                                  whileHover={{ scale: 1.1 }}
+                                  className="flex items-center gap-1"
+                                >
+                                  <ThumbsUp className="w-3 h-3" />
+                                  {topic.likes}
+                                </motion.span>
+                                <span className="flex items-center gap-1 ml-auto">
+                                  <Clock className="w-3 h-3" />
+                                  {topic.lastActivity}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                          
-                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                            {topic.excerpt}
-                          </p>
-                          
-                          <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              {topic.author}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MessageCircle className="w-3 h-3" />
-                              {topic.replies} replies
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <ThumbsUp className="w-3 h-3" />
-                              {topic.likes}
-                            </span>
-                            <span className="flex items-center gap-1 ml-auto">
-                              <Clock className="w-3 h-3" />
-                              {topic.lastActivity}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                        </motion.div>
+                      ))}
                     </motion.div>
-                  ))}
-                </div>
+                  </motion.div>
+                </AnimatePresence>
               </TabsContent>
 
               {/* Support Groups Tab */}
               <TabsContent value="groups" className="space-y-6">
-                <div className="text-center mb-8">
-                  <h2 className="text-2xl font-display font-bold text-foreground mb-2">
-                    Join a Support Group
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Virtual groups led by licensed professionals. Safe, confidential, and supportive.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {supportGroups.map((group, index) => (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key="groups"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <motion.div
-                      key={group.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ y: -4 }}
-                      className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 transition-all"
+                      className="text-center mb-8"
                     >
-                      <div className={`w-12 h-12 ${group.color} rounded-xl flex items-center justify-center mb-4`}>
-                        <Users className="w-6 h-6 text-white" />
-                      </div>
-                      
-                      <Badge variant="outline" className="mb-3">{group.category}</Badge>
-                      
-                      <h3 className="font-semibold text-lg text-foreground mb-2">{group.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-4">{group.description}</p>
-                      
-                      <div className="flex items-center gap-2 mb-4">
-                        <img
-                          src={group.facilitatorImage}
-                          alt={group.facilitator}
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <div>
-                          <p className="text-xs text-muted-foreground">Facilitated by</p>
-                          <p className="text-sm font-medium text-foreground">{group.facilitator}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                        <span className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          {group.members.toLocaleString()} members
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {group.nextSession}
-                        </span>
-                      </div>
-                      
-                      <Button 
-                        className="w-full" 
-                        onClick={() => handleJoinGroup(group.name)}
+                      <motion.div
+                        variants={floatVariants}
+                        animate="animate"
+                        className="inline-block"
                       >
-                        Join Group
-                      </Button>
+                        <Users className="w-12 h-12 text-primary mx-auto mb-4" />
+                      </motion.div>
+                      <h2 className="text-2xl font-display font-bold text-foreground mb-2">
+                        Join a Support Group
+                      </h2>
+                      <p className="text-muted-foreground">
+                        Virtual groups led by licensed professionals. Safe, confidential, and supportive.
+                      </p>
                     </motion.div>
-                  ))}
-                </div>
+
+                    <motion.div
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                      {supportGroups.map((group, index) => (
+                        <motion.div
+                          key={group.id}
+                          variants={itemVariants}
+                          whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                          className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 hover:shadow-elevated transition-all group"
+                        >
+                          <div className="flex items-start gap-3 mb-4">
+                            <motion.div
+                              whileHover={{ rotate: 360 }}
+                              transition={{ duration: 0.5 }}
+                              className={`w-12 h-12 rounded-xl ${group.color} flex items-center justify-center`}
+                            >
+                              <Users className="w-6 h-6 text-white" />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                                {group.name}
+                              </h3>
+                              <Badge variant="outline" className="text-xs mt-1">
+                                {group.category}
+                              </Badge>
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm text-muted-foreground mb-4">
+                            {group.description}
+                          </p>
+                          
+                          <div className="flex items-center gap-3 mb-4 p-3 bg-secondary/50 rounded-xl">
+                            <Avatar className="w-8 h-8">
+                              <AvatarImage src={group.facilitatorImage} />
+                              <AvatarFallback>{group.facilitator[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Facilitated by</p>
+                              <p className="text-sm font-medium text-foreground">{group.facilitator}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between text-sm mb-4">
+                            <motion.span
+                              animate={{ opacity: [0.5, 1, 0.5] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                              className="flex items-center gap-1 text-muted-foreground"
+                            >
+                              <Users className="w-4 h-4" />
+                              {group.members.toLocaleString()} members
+                            </motion.span>
+                            <span className="flex items-center gap-1 text-primary font-medium">
+                              <Calendar className="w-4 h-4" />
+                              {group.nextSession}
+                            </span>
+                          </div>
+                          
+                          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                            <Button
+                              onClick={() => handleJoinGroup(group.name)}
+                              className="w-full gap-2"
+                            >
+                              <Zap className="w-4 h-4" />
+                              Join Group
+                            </Button>
+                          </motion.div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                </AnimatePresence>
               </TabsContent>
 
               {/* Peer Support Tab */}
               <TabsContent value="peers" className="space-y-6">
-                <div className="text-center mb-8">
-                  <h2 className="text-2xl font-display font-bold text-foreground mb-2">
-                    Connect with Peer Supporters
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Get matched with trained individuals who have lived experience with mental health challenges.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  {peerSupporters.map((peer, index) => (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key="peers"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <motion.div
-                      key={peer.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ y: -4 }}
-                      className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 transition-all"
+                      className="text-center mb-8"
                     >
-                      <div className="flex gap-4">
-                        <div className="relative">
-                          <img
-                            src={peer.avatar}
-                            alt={peer.name}
-                            className="w-20 h-20 rounded-2xl object-cover"
-                          />
-                          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-card ${peer.available ? 'bg-green-500' : 'bg-muted'}`} />
-                        </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-semibold text-lg text-foreground">{peer.name}</h3>
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                              <span className="font-medium text-foreground">{peer.rating}</span>
-                              <span className="text-sm text-muted-foreground">({peer.reviews})</span>
+                      <motion.div
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="inline-block"
+                      >
+                        <Heart className="w-12 h-12 text-pink-500 mx-auto mb-4" />
+                      </motion.div>
+                      <h2 className="text-2xl font-display font-bold text-foreground mb-2">
+                        Connect with Peer Supporters
+                      </h2>
+                      <p className="text-muted-foreground">
+                        Trained peer supporters with lived experience who understand your journey.
+                      </p>
+                    </motion.div>
+
+                    <motion.div
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="grid md:grid-cols-2 gap-6"
+                    >
+                      {peerSupporters.map((peer, index) => (
+                        <motion.div
+                          key={peer.id}
+                          variants={itemVariants}
+                          whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                          className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 hover:shadow-elevated transition-all group"
+                        >
+                          <div className="flex gap-4">
+                            <motion.div
+                              whileHover={{ scale: 1.1 }}
+                              className="relative"
+                            >
+                              <Avatar className="w-16 h-16 ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all">
+                                <AvatarImage src={peer.avatar} />
+                                <AvatarFallback>{peer.name[0]}</AvatarFallback>
+                              </Avatar>
+                              {peer.available && (
+                                <motion.div
+                                  animate={{ scale: [1, 1.3, 1] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-card"
+                                />
+                              )}
+                            </motion.div>
+                            
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                                    {peer.name}
+                                  </h3>
+                                  <p className="text-sm text-primary font-medium">{peer.specialty}</p>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-4 h-4 fill-warning text-warning" />
+                                  <span className="font-medium text-foreground">{peer.rating}</span>
+                                </div>
+                              </div>
+                              
+                              <p className="text-xs text-muted-foreground mt-1">{peer.experience}</p>
+                              <p className="text-sm text-muted-foreground mt-2">{peer.bio}</p>
+                              
+                              <div className="flex items-center justify-between mt-4">
+                                <span className="text-xs text-muted-foreground">
+                                  {peer.reviews} reviews
+                                </span>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Button
+                                    size="sm"
+                                    variant={peer.available ? "default" : "outline"}
+                                    disabled={!peer.available}
+                                    onClick={() => handleConnectPeer(peer.name)}
+                                    className="gap-1"
+                                  >
+                                    {peer.available ? (
+                                      <>
+                                        <MessageSquare className="w-3 h-3" />
+                                        Connect
+                                      </>
+                                    ) : (
+                                      "Unavailable"
+                                    )}
+                                  </Button>
+                                </motion.div>
+                              </div>
                             </div>
                           </div>
-                          
-                          <Badge variant="secondary" className="mt-1">{peer.specialty}</Badge>
-                          
-                          <p className="text-sm text-muted-foreground mt-2">{peer.bio}</p>
-                          
-                          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                            <Award className="w-4 h-4 text-primary" />
-                            {peer.experience}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4 flex gap-2">
-                        <Button 
-                          className="flex-1" 
-                          disabled={!peer.available}
-                          onClick={() => handleConnectPeer(peer.name)}
-                        >
-                          {peer.available ? 'Connect Now' : 'Currently Unavailable'}
-                        </Button>
-                        <Button variant="outline" size="icon">
-                          <MessageSquare className="w-4 h-4" />
-                        </Button>
-                      </div>
+                        </motion.div>
+                      ))}
                     </motion.div>
-                  ))}
-                </div>
-
-                {/* How It Works */}
-                <div className="mt-12 bg-secondary/50 rounded-3xl p-8">
-                  <h3 className="text-xl font-display font-bold text-foreground text-center mb-8">
-                    How Peer Support Works
-                  </h3>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    {[
-                      { step: "1", title: "Browse Supporters", desc: "Find someone whose experience resonates with yours" },
-                      { step: "2", title: "Send a Request", desc: "Reach out and share a bit about what you're going through" },
-                      { step: "3", title: "Start Connecting", desc: "Meet via chat or video in a safe, supportive space" },
-                    ].map((item) => (
-                      <div key={item.step} className="text-center">
-                        <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                          {item.step}
-                        </div>
-                        <h4 className="font-semibold text-foreground mb-2">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground">{item.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  </motion.div>
+                </AnimatePresence>
               </TabsContent>
             </Tabs>
           </div>
         </section>
 
-        {/* Safety Notice */}
-        <section className="py-12 bg-primary/5">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <Shield className="w-12 h-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-display font-bold text-foreground mb-2">
-                Your Safety is Our Priority
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Our community is moderated 24/7 by trained professionals. We maintain strict guidelines to ensure 
-                everyone feels safe and respected. If you're in crisis, please reach out to our crisis helpline immediately.
+        {/* CTA Section */}
+        <section className="py-16 relative overflow-hidden">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
+            className="absolute -top-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"
+          />
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center max-w-2xl mx-auto"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Sparkles className="w-12 h-12 text-primary mx-auto mb-4" />
+              </motion.div>
+              <h2 className="text-3xl font-display font-bold text-foreground mb-4">
+                Ready to Start Your Healing Journey?
+              </h2>
+              <p className="text-muted-foreground mb-8">
+                Our community is here to support you every step of the way. Join thousands who have found hope and connection.
               </p>
-              <Button variant="outline" className="gap-2">
-                View Community Guidelines
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button size="lg" className="gap-2">
+                  <Heart className="w-5 h-5" />
+                  Join Our Community
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       </main>

@@ -10,6 +10,7 @@ import Testimonials from "./pages/Testimonials";
 import Dashboard from "./pages/Dashboard";
 import Blog from "./pages/Blog";
 import Community from "./pages/Community";
+import TherapistProfile from "./pages/TherapistProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/therapist/:id" element={<TherapistProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
