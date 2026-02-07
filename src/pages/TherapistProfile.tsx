@@ -397,6 +397,8 @@ const TherapistProfile = () => {
   const therapist = therapistsData.find(t => t.id === id);
 
   useEffect(() => {
+    // Scroll to top on mount
+    window.scrollTo({ top: 0, behavior: "smooth" });
     fetchExistingAppointments();
   }, [id]);
 

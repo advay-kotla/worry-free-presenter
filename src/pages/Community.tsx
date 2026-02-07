@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MessageSquare, Users, Heart, Shield, Sparkles, Search, 
   ThumbsUp, MessageCircle, Clock, User, Star, CheckCircle2,
-  Flame, TrendingUp, BookOpen, Award, Calendar, ArrowRight, Zap
+  Flame, TrendingUp, BookOpen, Award, Calendar, ArrowRight, Zap,
+  Trophy, Target, Gift, Crown, Medal, Rocket, PartyPopper, Coffee
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +29,7 @@ const forumTopics = [
     lastActivity: "2 hours ago",
     pinned: true,
     excerpt: "I've been struggling with anxiety during meetings. Does anyone have tips for staying calm when presenting?",
+    xpReward: 15,
   },
   {
     id: "2",
@@ -40,6 +43,7 @@ const forumTopics = [
     lastActivity: "45 min ago",
     pinned: true,
     excerpt: "I wanted to share my journey and thank this community for the incredible support.",
+    xpReward: 25,
   },
   {
     id: "3",
@@ -52,6 +56,7 @@ const forumTopics = [
     views: 189,
     lastActivity: "1 hour ago",
     excerpt: "After trying dozens of apps and techniques, here's what finally clicked for me...",
+    xpReward: 10,
   },
   {
     id: "4",
@@ -64,6 +69,7 @@ const forumTopics = [
     views: 156,
     lastActivity: "3 hours ago",
     excerpt: "My partner was recently diagnosed and I want to be there for them. Any advice?",
+    xpReward: 10,
   },
   {
     id: "5",
@@ -76,6 +82,7 @@ const forumTopics = [
     views: 267,
     lastActivity: "30 min ago",
     excerpt: "I finally booked my first appointment. I'm nervous but excited. What should I know?",
+    xpReward: 15,
   },
   {
     id: "6",
@@ -88,6 +95,7 @@ const forumTopics = [
     views: 345,
     lastActivity: "15 min ago",
     excerpt: "Let's create a thread where we share three things we're grateful for each day!",
+    xpReward: 20,
   },
 ];
 
@@ -102,6 +110,7 @@ const supportGroups = [
     facilitatorImage: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop&crop=face",
     category: "Anxiety",
     color: "bg-blue-500",
+    xpReward: 50,
   },
   {
     id: "2",
@@ -113,6 +122,7 @@ const supportGroups = [
     facilitatorImage: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face",
     category: "Depression",
     color: "bg-purple-500",
+    xpReward: 50,
   },
   {
     id: "3",
@@ -124,6 +134,7 @@ const supportGroups = [
     facilitatorImage: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=100&h=100&fit=crop&crop=face",
     category: "Grief",
     color: "bg-indigo-500",
+    xpReward: 50,
   },
   {
     id: "4",
@@ -135,6 +146,7 @@ const supportGroups = [
     facilitatorImage: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&h=100&fit=crop&crop=face",
     category: "Recovery",
     color: "bg-rose-500",
+    xpReward: 75,
   },
   {
     id: "5",
@@ -146,6 +158,7 @@ const supportGroups = [
     facilitatorImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face",
     category: "Wellness",
     color: "bg-teal-500",
+    xpReward: 40,
   },
   {
     id: "6",
@@ -157,6 +170,7 @@ const supportGroups = [
     facilitatorImage: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=100&h=100&fit=crop&crop=face",
     category: "Youth",
     color: "bg-amber-500",
+    xpReward: 45,
   },
 ];
 
@@ -171,6 +185,8 @@ const peerSupporters = [
     reviews: 127,
     bio: "I've walked the path of anxiety recovery and now help others find their way.",
     available: true,
+    level: "Mentor",
+    badge: "🌟",
   },
   {
     id: "2",
@@ -182,6 +198,8 @@ const peerSupporters = [
     reviews: 203,
     bio: "Depression doesn't define you. I'm here to remind you of your strength.",
     available: true,
+    level: "Champion",
+    badge: "👑",
   },
   {
     id: "3",
@@ -193,6 +211,8 @@ const peerSupporters = [
     reviews: 89,
     bio: "Creating affirming spaces for the LGBTQ+ community to heal and thrive.",
     available: false,
+    level: "Guardian",
+    badge: "🛡️",
   },
   {
     id: "4",
@@ -204,6 +224,8 @@ const peerSupporters = [
     reviews: 156,
     bio: "Recovery is possible. I'm living proof and here to support your journey.",
     available: true,
+    level: "Legend",
+    badge: "🏆",
   },
 ];
 
@@ -215,6 +237,32 @@ const communityStats = [
 ];
 
 const forumCategories = ["All", "Anxiety", "Depression", "Recovery", "Mindfulness", "Relationships", "Therapy", "Self-Care"];
+
+// Gamification data
+const userLevels = [
+  { level: 1, name: "Newcomer", minXP: 0, icon: "🌱", color: "text-green-500" },
+  { level: 2, name: "Supporter", minXP: 100, icon: "💚", color: "text-emerald-500" },
+  { level: 3, name: "Encourager", minXP: 300, icon: "⭐", color: "text-amber-500" },
+  { level: 4, name: "Mentor", minXP: 600, icon: "🌟", color: "text-yellow-500" },
+  { level: 5, name: "Champion", minXP: 1000, icon: "👑", color: "text-orange-500" },
+  { level: 6, name: "Legend", minXP: 2000, icon: "🏆", color: "text-rose-500" },
+];
+
+const achievements = [
+  { id: "first_post", name: "First Steps", description: "Made your first post", icon: Rocket, unlocked: true, xp: 25 },
+  { id: "week_streak", name: "Consistency", description: "7-day login streak", icon: Flame, unlocked: true, xp: 50 },
+  { id: "supporter", name: "Helping Hand", description: "Replied to 10 posts", icon: Heart, unlocked: true, xp: 75 },
+  { id: "popular", name: "Popular Voice", description: "Got 50 likes on a post", icon: Star, unlocked: false, xp: 100 },
+  { id: "mentor", name: "Mentor", description: "Helped 25 members", icon: Trophy, unlocked: false, xp: 150 },
+  { id: "legend", name: "Community Legend", description: "1 year active member", icon: Crown, unlocked: false, xp: 500 },
+];
+
+const dailyChallenges = [
+  { id: 1, name: "Share Gratitude", description: "Post 3 things you're grateful for", xp: 15, completed: false, icon: Gift },
+  { id: 2, name: "Support Others", description: "Reply to 2 community posts", xp: 20, completed: true, icon: Heart },
+  { id: 3, name: "Daily Check-in", description: "Log your mood today", xp: 10, completed: true, icon: CheckCircle2 },
+  { id: 4, name: "Mindful Moment", description: "Complete a 5-min meditation", xp: 25, completed: false, icon: Coffee },
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -249,11 +297,38 @@ const pulseVariants = {
   },
 };
 
+const shineVariants = {
+  animate: {
+    backgroundPosition: ["200% 0", "-200% 0"],
+    transition: { duration: 3, repeat: Infinity, ease: "linear" as const },
+  },
+};
+
 const Community = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("forums");
+  const [userXP, setUserXP] = useState(450);
+  const [showXPGain, setShowXPGain] = useState(false);
+  const [xpGainAmount, setXpGainAmount] = useState(0);
+  const [loginStreak, setLoginStreak] = useState(7);
   const { toast } = useToast();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const currentLevel = userLevels.reduce((acc, level) => userXP >= level.minXP ? level : acc, userLevels[0]);
+  const nextLevel = userLevels.find(l => l.minXP > userXP) || userLevels[userLevels.length - 1];
+  const progressToNextLevel = ((userXP - currentLevel.minXP) / (nextLevel.minXP - currentLevel.minXP)) * 100;
+
+  const gainXP = (amount: number) => {
+    setXpGainAmount(amount);
+    setShowXPGain(true);
+    setUserXP(prev => prev + amount);
+    setTimeout(() => setShowXPGain(false), 1500);
+  };
 
   const filteredTopics = forumTopics.filter(topic => {
     const matchesCategory = selectedCategory === "All" || topic.category === selectedCategory;
@@ -324,84 +399,261 @@ const Community = () => {
           ))}
           
           <div className="container mx-auto px-4 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center max-w-3xl mx-auto"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-              >
-                <Badge className="mb-4 bg-primary/10 text-primary border-0 py-2 px-4">
-                  <motion.span variants={pulseVariants} animate="animate">
-                    <Users className="w-4 h-4 mr-2 inline" />
-                  </motion.span>
-                  You're Not Alone
-                </Badge>
-              </motion.div>
-              
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4"
-              >
-                Welcome to Our{" "}
-                <motion.span
-                  animate={{ 
-                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                  }}
-                  transition={{ duration: 5, repeat: Infinity }}
-                  className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto]"
+            {/* XP Gain Animation */}
+            <AnimatePresence>
+              {showXPGain && (
+                <motion.div
+                  initial={{ opacity: 0, y: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, y: -50, scale: 1 }}
+                  exit={{ opacity: 0, y: -100 }}
+                  className="fixed top-1/4 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
                 >
-                  Community
-                </motion.span>
-              </motion.h1>
-              
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-lg text-muted-foreground mb-8"
-              >
-                Connect with thousands of people who understand. Share your journey, find support, and grow together.
-              </motion.p>
-              
-              {/* Stats with staggered animation */}
+                  <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-bold text-xl shadow-lg flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    +{xpGainAmount} XP
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Main Hero Content */}
               <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="lg:col-span-2 text-center lg:text-left"
               >
-                {communityStats.map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border shadow-soft hover:shadow-elevated transition-all cursor-default"
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                >
+                  <Badge className="mb-4 bg-primary/10 text-primary border-0 py-2 px-4">
+                    <motion.span variants={pulseVariants} animate="animate">
+                      <Users className="w-4 h-4 mr-2 inline" />
+                    </motion.span>
+                    You're Not Alone
+                  </Badge>
+                </motion.div>
+                
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4"
+                >
+                  Welcome to Our{" "}
+                  <motion.span
+                    animate={{ 
+                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                    }}
+                    transition={{ duration: 5, repeat: Infinity }}
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto]"
                   >
+                    Community
+                  </motion.span>
+                </motion.h1>
+                
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-lg text-muted-foreground mb-8"
+                >
+                  Connect with thousands of people who understand. Share your journey, find support, and grow together.
+                </motion.p>
+                
+                {/* Stats with staggered animation */}
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                >
+                  {communityStats.map((stat, index) => (
                     <motion.div
-                      animate={{ rotate: [0, 5, -5, 0] }}
-                      transition={{ duration: 4, repeat: Infinity, delay: index * 0.2 }}
+                      key={stat.label}
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border shadow-soft hover:shadow-elevated transition-all cursor-default"
                     >
-                      <stat.icon className={`w-6 h-6 ${stat.color} mx-auto mb-2`} />
+                      <motion.div
+                        animate={{ rotate: [0, 5, -5, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, delay: index * 0.2 }}
+                      >
+                        <stat.icon className={`w-6 h-6 ${stat.color} mx-auto mb-2`} />
+                      </motion.div>
+                      <motion.p
+                        initial={{ scale: 0.5 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
+                        className="text-2xl font-bold text-foreground"
+                      >
+                        {stat.value}
+                      </motion.p>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
                     </motion.div>
-                    <motion.p
-                      initial={{ scale: 0.5 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
-                      className="text-2xl font-bold text-foreground"
-                    >
-                      {stat.value}
-                    </motion.p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  </motion.div>
-                ))}
+                  ))}
+                </motion.div>
               </motion.div>
-            </motion.div>
+
+              {/* Gamification Panel */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="space-y-4"
+              >
+                {/* User Level Card */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-card/90 backdrop-blur-sm rounded-2xl p-5 border border-border shadow-elevated"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="text-4xl"
+                    >
+                      {currentLevel.icon}
+                    </motion.div>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">Your Level</p>
+                      <p className={`font-bold text-lg ${currentLevel.color}`}>
+                        {currentLevel.name}
+                      </p>
+                    </div>
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full"
+                    >
+                      <Flame className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm font-bold text-foreground">{loginStreak}</span>
+                    </motion.div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{userXP} XP</span>
+                      <span className="text-muted-foreground">{nextLevel.minXP} XP</span>
+                    </div>
+                    <div className="relative">
+                      <Progress value={progressToNextLevel} className="h-3" />
+                      <motion.div
+                        variants={shineVariants}
+                        animate="animate"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full"
+                        style={{ backgroundSize: "200% 100%" }}
+                      />
+                    </div>
+                    <p className="text-xs text-center text-muted-foreground">
+                      {nextLevel.minXP - userXP} XP to {nextLevel.name}
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Daily Challenges */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="bg-card/90 backdrop-blur-sm rounded-2xl p-5 border border-border shadow-soft"
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Target className="w-5 h-5 text-primary" />
+                    </motion.div>
+                    <h3 className="font-semibold text-foreground">Daily Challenges</h3>
+                    <Badge variant="secondary" className="ml-auto text-xs">
+                      2/4
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {dailyChallenges.map((challenge, idx) => (
+                      <motion.div
+                        key={challenge.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.7 + idx * 0.1 }}
+                        whileHover={{ x: 4 }}
+                        onClick={() => {
+                          if (!challenge.completed) {
+                            gainXP(challenge.xp);
+                            toast({
+                              title: "Challenge Complete! 🎉",
+                              description: `You earned ${challenge.xp} XP for "${challenge.name}"`,
+                            });
+                          }
+                        }}
+                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                          challenge.completed 
+                            ? "bg-primary/10 border border-primary/20" 
+                            : "bg-secondary/50 hover:bg-secondary border border-transparent"
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          challenge.completed ? "bg-primary text-primary-foreground" : "bg-muted"
+                        }`}>
+                          {challenge.completed ? (
+                            <CheckCircle2 className="w-4 h-4" />
+                          ) : (
+                            <challenge.icon className="w-4 h-4" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${challenge.completed ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                            {challenge.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">{challenge.description}</p>
+                        </div>
+                        <Badge variant="outline" className="text-xs shrink-0">
+                          +{challenge.xp} XP
+                        </Badge>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Achievements Preview */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="bg-card/90 backdrop-blur-sm rounded-2xl p-5 border border-border shadow-soft"
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <Trophy className="w-5 h-5 text-amber-500" />
+                    <h3 className="font-semibold text-foreground">Achievements</h3>
+                    <span className="text-xs text-muted-foreground ml-auto">3/6 unlocked</span>
+                  </div>
+                  
+                  <div className="flex gap-2 flex-wrap">
+                    {achievements.slice(0, 6).map((achievement, idx) => (
+                      <motion.div
+                        key={achievement.id}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.9 + idx * 0.1, type: "spring" }}
+                        whileHover={{ scale: 1.15, y: -3 }}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer transition-all ${
+                          achievement.unlocked 
+                            ? "bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md" 
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                        title={`${achievement.name}: ${achievement.description}`}
+                      >
+                        <achievement.icon className="w-5 h-5" />
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
@@ -503,8 +755,30 @@ const Community = () => {
                           key={topic.id}
                           variants={itemVariants}
                           whileHover={{ x: 8, transition: { duration: 0.2 } }}
-                          className="bg-card rounded-2xl p-5 border border-border hover:border-primary/50 hover:shadow-elevated transition-all cursor-pointer group"
+                          onClick={() => {
+                            gainXP(topic.xpReward);
+                            toast({
+                              title: "Discussion Opened! 💬",
+                              description: `You earned ${topic.xpReward} XP for engaging with the community`,
+                            });
+                          }}
+                          className="bg-card rounded-2xl p-5 border border-border hover:border-primary/50 hover:shadow-elevated transition-all cursor-pointer group relative overflow-hidden"
                         >
+                          {/* XP Reward indicator */}
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="absolute top-3 right-3"
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              +{topic.xpReward} XP
+                            </motion.div>
+                          </motion.div>
+
                           <div className="flex gap-4">
                             <motion.div whileHover={{ scale: 1.1 }}>
                               <Avatar className="w-12 h-12 ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all">
@@ -522,7 +796,7 @@ const Community = () => {
                                         animate={{ scale: [1, 1.1, 1] }}
                                         transition={{ duration: 1.5, repeat: Infinity }}
                                       >
-                                        <Badge variant="secondary" className="text-xs bg-orange-500/10 text-orange-500 border-orange-500/20">
+                                        <Badge variant="secondary" className="text-xs bg-warning/10 text-warning border-warning/20">
                                           <Flame className="w-3 h-3 mr-1" />
                                           Trending
                                         </Badge>
@@ -547,20 +821,32 @@ const Community = () => {
                                   <User className="w-3 h-3" />
                                   {topic.author}
                                 </span>
-                                <motion.span
+                                <motion.button
                                   whileHover={{ scale: 1.1 }}
-                                  className="flex items-center gap-1"
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    gainXP(5);
+                                    toast({ title: "Replied! +5 XP" });
+                                  }}
+                                  className="flex items-center gap-1 hover:text-primary transition-colors"
                                 >
                                   <MessageCircle className="w-3 h-3" />
                                   {topic.replies} replies
-                                </motion.span>
-                                <motion.span
+                                </motion.button>
+                                <motion.button
                                   whileHover={{ scale: 1.1 }}
-                                  className="flex items-center gap-1"
+                                  whileTap={{ scale: 0.95 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    gainXP(2);
+                                    toast({ title: "Liked! +2 XP" });
+                                  }}
+                                  className="flex items-center gap-1 hover:text-accent transition-colors"
                                 >
                                   <ThumbsUp className="w-3 h-3" />
                                   {topic.likes}
-                                </motion.span>
+                                </motion.button>
                                 <span className="flex items-center gap-1 ml-auto">
                                   <Clock className="w-3 h-3" />
                                   {topic.lastActivity}
@@ -616,13 +902,25 @@ const Community = () => {
                           key={group.id}
                           variants={itemVariants}
                           whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                          className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 hover:shadow-elevated transition-all group"
+                          className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 hover:shadow-elevated transition-all group relative overflow-hidden"
                         >
+                          {/* XP Badge */}
+                          <motion.div
+                            animate={{ scale: [1, 1.05, 1] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="absolute top-3 right-3"
+                          >
+                            <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-bold">
+                              <Trophy className="w-3 h-3" />
+                              +{group.xpReward} XP
+                            </div>
+                          </motion.div>
+
                           <div className="flex items-start gap-3 mb-4">
                             <motion.div
                               whileHover={{ rotate: 360 }}
                               transition={{ duration: 0.5 }}
-                              className={`w-12 h-12 rounded-xl ${group.color} flex items-center justify-center`}
+                              className={`w-12 h-12 rounded-xl ${group.color} flex items-center justify-center shadow-md`}
                             >
                               <Users className="w-6 h-6 text-white" />
                             </motion.div>
@@ -641,7 +939,7 @@ const Community = () => {
                           </p>
                           
                           <div className="flex items-center gap-3 mb-4 p-3 bg-secondary/50 rounded-xl">
-                            <Avatar className="w-8 h-8">
+                            <Avatar className="w-8 h-8 ring-2 ring-primary/20">
                               <AvatarImage src={group.facilitatorImage} />
                               <AvatarFallback>{group.facilitator[0]}</AvatarFallback>
                             </Avatar>
@@ -668,7 +966,10 @@ const Community = () => {
                           
                           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                             <Button
-                              onClick={() => handleJoinGroup(group.name)}
+                              onClick={() => {
+                                handleJoinGroup(group.name);
+                                gainXP(group.xpReward);
+                              }}
                               className="w-full gap-2"
                             >
                               <Zap className="w-4 h-4" />
@@ -723,8 +1024,20 @@ const Community = () => {
                           key={peer.id}
                           variants={itemVariants}
                           whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                          className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 hover:shadow-elevated transition-all group"
+                          className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 hover:shadow-elevated transition-all group relative overflow-hidden"
                         >
+                          {/* Level Badge */}
+                          <motion.div
+                            initial={{ x: 100 }}
+                            animate={{ x: 0 }}
+                            className="absolute top-3 right-3"
+                          >
+                            <div className="flex items-center gap-1 bg-gradient-to-r from-primary/20 to-accent/20 px-3 py-1 rounded-full">
+                              <span className="text-sm">{peer.badge}</span>
+                              <span className="text-xs font-bold text-foreground">{peer.level}</span>
+                            </div>
+                          </motion.div>
+
                           <div className="flex gap-4">
                             <motion.div
                               whileHover={{ scale: 1.1 }}
@@ -738,8 +1051,10 @@ const Community = () => {
                                 <motion.div
                                   animate={{ scale: [1, 1.3, 1] }}
                                   transition={{ duration: 1.5, repeat: Infinity }}
-                                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-card"
-                                />
+                                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full border-2 border-card flex items-center justify-center"
+                                >
+                                  <CheckCircle2 className="w-3 h-3 text-primary-foreground" />
+                                </motion.div>
                               )}
                             </motion.div>
                             
@@ -751,31 +1066,41 @@ const Community = () => {
                                   </h3>
                                   <p className="text-sm text-primary font-medium">{peer.specialty}</p>
                                 </div>
-                                <div className="flex items-center gap-1">
+                                <motion.div 
+                                  whileHover={{ scale: 1.1 }}
+                                  className="flex items-center gap-1"
+                                >
                                   <Star className="w-4 h-4 fill-warning text-warning" />
                                   <span className="font-medium text-foreground">{peer.rating}</span>
-                                </div>
+                                </motion.div>
                               </div>
                               
                               <p className="text-xs text-muted-foreground mt-1">{peer.experience}</p>
                               <p className="text-sm text-muted-foreground mt-2">{peer.bio}</p>
                               
                               <div className="flex items-center justify-between mt-4">
-                                <span className="text-xs text-muted-foreground">
+                                <motion.span 
+                                  whileHover={{ scale: 1.05 }}
+                                  className="text-xs text-muted-foreground flex items-center gap-1"
+                                >
+                                  <MessageCircle className="w-3 h-3" />
                                   {peer.reviews} reviews
-                                </span>
+                                </motion.span>
                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                   <Button
                                     size="sm"
                                     variant={peer.available ? "default" : "outline"}
                                     disabled={!peer.available}
-                                    onClick={() => handleConnectPeer(peer.name)}
+                                    onClick={() => {
+                                      handleConnectPeer(peer.name);
+                                      if (peer.available) gainXP(30);
+                                    }}
                                     className="gap-1"
                                   >
                                     {peer.available ? (
                                       <>
                                         <MessageSquare className="w-3 h-3" />
-                                        Connect
+                                        Connect +30 XP
                                       </>
                                     ) : (
                                       "Unavailable"
