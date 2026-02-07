@@ -123,8 +123,16 @@ const CommunitySection = () => {
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button variant="hero" size="lg" className="group" asChild>
-                <Link to="/community">
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="group" 
+                asChild
+              >
+                <Link 
+                  to="/community"
+                  onClick={() => window.scrollTo({ top: 0 })}
+                >
                   Join the Community
                   <motion.span
                     animate={{ rotate: [0, 15, -15, 0] }}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen, Clock, ArrowRight, ArrowLeft, Search, Tag, User, Calendar, Heart, Share2, Bookmark, X,
@@ -363,6 +363,11 @@ const Blog = () => {
   const [showXPGain, setShowXPGain] = useState(false);
   const [gainedXP, setGainedXP] = useState(0);
   const { toast } = useToast();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
