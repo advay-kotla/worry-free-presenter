@@ -1,38 +1,36 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, 
-  MessageCircle, 
   Clock, 
-  Home, 
-  Bell, 
   Search, 
-  Heart,
   Plus,
-  LogOut,
-  Settings,
   TrendingUp,
-  Zap,
-  Activity
+  LayoutDashboard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { format, isPast, isToday, isFuture } from "date-fns";
+import { isPast, isToday, isFuture } from "date-fns";
+
+// Dashboard Components
+import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import AppointmentCard from "@/components/dashboard/AppointmentCard";
 import MessagesPanel from "@/components/dashboard/MessagesPanel";
-import ThemeToggle from "@/components/ThemeToggle";
+import MoodTracker from "@/components/dashboard/MoodTracker";
+import DailyCheckin from "@/components/dashboard/DailyCheckin";
+import WellnessGoals from "@/components/dashboard/WellnessGoals";
+import QuickActions from "@/components/dashboard/QuickActions";
+import ProgressView from "@/components/dashboard/ProgressView";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeView, setActiveView] = useState<"appointments" | "messages">("appointments");
+  const [activeView, setActiveView] = useState<string>("overview");
   const [appointmentFilter, setAppointmentFilter] = useState<"upcoming" | "history">("upcoming");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -100,6 +98,26 @@ const Dashboard = () => {
 
   const wellnessScore = Math.min(95, 60 + pastAppointments.length * 5);
 
+  const getViewTitle = () => {
+    switch (activeView) {
+      case "overview": return "Dashboard Overview";
+      case "appointments": return "Your Appointments";
+      case "messages": return "Messages";
+      case "progress": return "Progress & Analytics";
+      default: return "Dashboard";
+    }
+  };
+
+  const getViewSubtitle = () => {
+    switch (activeView) {
+      case "overview": return "Welcome back! Here's your wellness snapshot";
+      case "appointments": return `${upcomingAppointments.length} upcoming · ${pastAppointments.length} completed`;
+      case "messages": return "3 unread conversations";
+      case "progress": return "Track your wellness journey";
+      default: return "";
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-screen bg-background flex items-center justify-center">
@@ -118,154 +136,14 @@ const Dashboard = () => {
   return (
     <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar */}
-      <motion.aside
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="w-64 bg-card border-r border-border flex flex-col shrink-0"
-      >
-        {/* Logo */}
-        <div className="p-4 border-b border-border">
-          <Link to="/" className="flex items-center gap-3 group">
-            <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20"
-            >
-              <Heart className="w-5 h-5 text-primary-foreground" />
-            </motion.div>
-            <div>
-              <span className="font-display font-bold text-foreground">MindfulPath</span>
-              <p className="text-[10px] text-muted-foreground">Wellness Dashboard</p>
-            </div>
-          </Link>
-        </div>
-
-        {/* User Profile Section */}
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-11 w-11 ring-2 ring-primary/20 ring-offset-2 ring-offset-card">
-              <AvatarImage src="" />
-              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                {user?.email?.[0]?.toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm text-foreground truncate">
-                {user?.email?.split("@")[0]}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {format(new Date(), "MMM d, yyyy")}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1">
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">
-            Menu
-          </p>
-          
-          <button
-            onClick={() => setActiveView("appointments")}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              activeView === "appointments"
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            Appointments
-            <Badge className={`ml-auto text-[10px] h-5 px-1.5 ${
-              activeView === "appointments" 
-                ? "bg-primary-foreground/20 text-primary-foreground" 
-                : "bg-secondary text-muted-foreground"
-            }`}>
-              {appointments.length}
-            </Badge>
-          </button>
-          
-          <button
-            onClick={() => setActiveView("messages")}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              activeView === "messages"
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-            }`}
-          >
-            <MessageCircle className="w-4 h-4" />
-            Messages
-            <Badge className={`ml-auto text-[10px] h-5 px-1.5 ${
-              activeView === "messages" 
-                ? "bg-primary-foreground/20 text-primary-foreground" 
-                : "bg-accent text-accent-foreground"
-            }`}>
-              3
-            </Badge>
-          </button>
-
-          <div className="pt-4">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">
-              Quick Links
-            </p>
-            
-            <Link
-              to="/"
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
-            >
-              <Home className="w-4 h-4" />
-              Back to Home
-            </Link>
-            
-            <button
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </button>
-          </div>
-        </nav>
-
-        {/* Stats Card */}
-        <div className="p-4 mx-3 mb-3 rounded-2xl bg-gradient-to-br from-primary/10 via-accent/5 to-transparent border border-primary/10">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-              <Activity className="w-4 h-4 text-primary" />
-            </div>
-            <span className="text-xs font-semibold text-foreground">Wellness Score</span>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-primary">{wellnessScore}</span>
-            <span className="text-xs text-muted-foreground mb-1">/ 100</span>
-          </div>
-          <div className="mt-2 h-1.5 bg-secondary rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${wellnessScore}%` }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
-            />
-          </div>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="p-3 border-t border-border flex items-center gap-2">
-          <ThemeToggle />
-          <Button variant="ghost" size="icon" className="relative h-9 w-9">
-            <Bell className="w-4 h-4" />
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-accent text-accent-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
-              2
-            </span>
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={handleSignOut}
-            className="h-9 w-9 text-muted-foreground hover:text-destructive"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
-      </motion.aside>
+      <DashboardSidebar
+        user={user}
+        activeView={activeView}
+        setActiveView={setActiveView}
+        appointmentsCount={appointments.length}
+        wellnessScore={wellnessScore}
+        onSignOut={handleSignOut}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -277,13 +155,10 @@ const Dashboard = () => {
         >
           <div>
             <h1 className="font-display text-xl font-bold text-foreground">
-              {activeView === "appointments" ? "Your Appointments" : "Messages"}
+              {getViewTitle()}
             </h1>
             <p className="text-xs text-muted-foreground">
-              {activeView === "appointments" 
-                ? `${upcomingAppointments.length} upcoming · ${pastAppointments.length} completed`
-                : "3 unread conversations"
-              }
+              {getViewSubtitle()}
             </p>
           </div>
 
@@ -335,15 +210,92 @@ const Dashboard = () => {
         </motion.header>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-hidden p-6">
+        <div className="flex-1 overflow-hidden">
           <AnimatePresence mode="wait">
-            {activeView === "appointments" ? (
+            {activeView === "overview" && (
+              <motion.div
+                key="overview"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="h-full"
+              >
+                <ScrollArea className="h-full">
+                  <div className="p-6 space-y-6">
+                    {/* Top Row - Welcome + Quick Actions */}
+                    <div className="grid lg:grid-cols-3 gap-6">
+                      {/* Left Column - Mood & Check-in */}
+                      <div className="lg:col-span-2 space-y-6">
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <MoodTracker />
+                          <DailyCheckin />
+                        </div>
+                        
+                        {/* Upcoming Appointments Preview */}
+                        <div className="rounded-2xl bg-card border border-border p-5">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <Calendar className="w-5 h-5 text-primary" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-foreground text-sm">Upcoming Sessions</h3>
+                                <p className="text-xs text-muted-foreground">{upcomingAppointments.length} scheduled</p>
+                              </div>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => setActiveView("appointments")}
+                              className="text-xs"
+                            >
+                              View All
+                            </Button>
+                          </div>
+                          
+                          {upcomingAppointments.length > 0 ? (
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              {upcomingAppointments.slice(0, 2).map((appointment) => (
+                                <AppointmentCard key={appointment.id} appointment={appointment} />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8">
+                              <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-secondary/50 flex items-center justify-center">
+                                <Calendar className="w-6 h-6 text-muted-foreground" />
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-3">No upcoming appointments</p>
+                              <Button size="sm" onClick={() => navigate("/#schedule")}>
+                                <Plus className="w-4 h-4 mr-1.5" />
+                                Book a Session
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right Column - Goals & Actions */}
+                      <div className="space-y-6">
+                        <QuickActions />
+                      </div>
+                    </div>
+
+                    {/* Bottom Row - Wellness Goals */}
+                    <div className="grid lg:grid-cols-2 gap-6">
+                      <WellnessGoals />
+                    </div>
+                  </div>
+                </ScrollArea>
+              </motion.div>
+            )}
+
+            {activeView === "appointments" && (
               <motion.div
                 key="appointments"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="h-full"
+                className="h-full p-6"
               >
                 {filteredAppointments.length > 0 ? (
                   <ScrollArea className="h-full pr-4">
@@ -391,15 +343,33 @@ const Dashboard = () => {
                   </div>
                 )}
               </motion.div>
-            ) : (
+            )}
+
+            {activeView === "messages" && (
               <motion.div
                 key="messages"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="h-full"
+                className="h-full p-6"
               >
                 <MessagesPanel />
+              </motion.div>
+            )}
+
+            {activeView === "progress" && (
+              <motion.div
+                key="progress"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="h-full"
+              >
+                <ScrollArea className="h-full">
+                  <div className="p-6">
+                    <ProgressView />
+                  </div>
+                </ScrollArea>
               </motion.div>
             )}
           </AnimatePresence>
