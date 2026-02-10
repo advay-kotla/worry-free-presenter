@@ -57,7 +57,7 @@ const Footer = () => {
               >
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </motion.div>
-              <span className="font-display font-bold text-xl">MindfulPath</span>
+              <span className="font-display font-bold text-xl">Voice4Minds</span>
             </motion.button>
             <p className="text-background/70 text-sm leading-relaxed">
               Providing mental health resources, support, and hope for everyone on their journey to wellness.
@@ -150,11 +150,11 @@ const Footer = () => {
               <li>
                 <motion.a
                   whileHover={{ x: 4 }}
-                  href="mailto:support@mindfulpath.org"
+                  href="mailto:support@Voice4Minds.org"
                   className="flex items-center gap-2 hover:text-background transition-colors"
                 >
                   <Mail className="w-4 h-4 text-primary" />
-                  <span>support@mindfulpath.org</span>
+                  <span>support@Voice4Minds.org</span>
                 </motion.a>
               </li>
               <li className="flex items-start gap-2">
@@ -173,7 +173,7 @@ const Footer = () => {
           className="pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4"
         >
           <p className="text-sm text-background/60">
-            © 2025 MindfulPath. All rights reserved. | 
+            © 2026 Voice4Minds. All rights reserved. | 
             <motion.span whileHover={{ color: "var(--background)" }} className="hover:text-background cursor-pointer ml-1">
               Privacy Policy
             </motion.span> | 

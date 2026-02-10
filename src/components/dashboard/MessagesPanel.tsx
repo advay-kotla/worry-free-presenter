@@ -51,7 +51,7 @@ const conversations: Conversation[] = [
   },
   {
     id: "3",
-    name: "MindfulPath Support",
+    name: "Voice4Minds Support",
     role: "Support Team",
     image: "",
     lastMessage: "Thank you for reaching out. How can we help?",

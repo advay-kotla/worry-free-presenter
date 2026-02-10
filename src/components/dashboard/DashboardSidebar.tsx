@@ -69,7 +69,7 @@ const DashboardSidebar = ({
             <Heart className="w-5 h-5 text-primary-foreground" />
           </motion.div>
           <div>
-            <span className="font-display font-bold text-foreground">MindfulPath</span>
+            <span className="font-display font-bold text-foreground">Voice4Minds</span>
             <p className="text-[10px] text-muted-foreground">Wellness Dashboard</p>
           </div>
         </Link>

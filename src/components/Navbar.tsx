@@ -87,7 +87,7 @@ const Navbar = () => {
             >
               <Heart className="w-5 h-5 text-primary-foreground" />
             </motion.div>
-            <span className="font-display font-bold text-xl text-foreground">MindfulPath</span>
+            <span className="font-display font-bold text-xl text-foreground">Voice4Minds</span>
           </Link>
 
           {/* Desktop Navigation */}

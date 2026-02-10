@@ -59,7 +59,7 @@ const Auth = () => {
         if (error) throw error;
         toast({
           title: "Account created!",
-          description: "Welcome to MindfulPath. You can now access all features.",
+          description: "Welcome to Voice4Minds. You can now access all features.",
         });
       }
     } catch (error: any) {
@@ -79,7 +79,7 @@ const Auth = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <Heart className="w-8 h-8 text-primary" />
-            <span className="text-2xl font-display font-bold text-foreground">MindfulPath</span>
+            <span className="text-2xl font-display font-bold text-foreground">Voice4Minds</span>
           </div>
           <h1 className="text-3xl font-display font-bold text-foreground mb-2">
             {isLogin ? "Welcome Back" : "Get Started"}

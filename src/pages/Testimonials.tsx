@@ -10,7 +10,7 @@ const testimonials = [
     story: "After years of struggling with anxiety in silence, I finally found the courage to seek help through this platform. The resources and community support changed my life. I'm now living proof that recovery is possible.",
     condition: "Anxiety Recovery",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
-    fullStory: "For 8 years, I suffered in silence. Every day was a battle against my own mind. Then I found MindfulPath. My therapist, Dr. Emily, helped me understand that anxiety wasn't my identity—it was something I could manage. Through weekly sessions and the coping techniques I learned, I've regained control of my life. I now volunteer to help others who are where I once was.",
+    fullStory: "For 8 years, I suffered in silence. Every day was a battle against my own mind. Then I found Voice4Minds. My therapist, Dr. Emily, helped me understand that anxiety wasn't my identity—it was something I could manage. Through weekly sessions and the coping techniques I learned, I've regained control of my life. I now volunteer to help others who are where I once was.",
   },
   {
     name: "James L.",
@@ -24,7 +24,7 @@ const testimonials = [
     story: "The blog posts helped me understand that what I was experiencing wasn't weakness—it was PTSD. Learning about trauma changed everything. Now I'm three years into recovery and stronger than ever.",
     condition: "PTSD Recovery",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
-    fullStory: "After a traumatic experience, I didn't know what was happening to me. The flashbacks, the nightmares, the constant fear. Reading articles on MindfulPath helped me name what I was experiencing. Working with Dr. Lisa using EMDR therapy, I've processed my trauma and reclaimed my life. Three years in, I'm not just surviving—I'm thriving.",
+    fullStory: "After a traumatic experience, I didn't know what was happening to me. The flashbacks, the nightmares, the constant fear. Reading articles on Voice4Minds helped me name what I was experiencing. Working with Dr. Lisa using EMDR therapy, I've processed my trauma and reclaimed my life. Three years in, I'm not just surviving—I'm thriving.",
   },
   {
     name: "David K.",
@@ -38,7 +38,7 @@ const testimonials = [
     story: "As a caregiver, I forgot to take care of myself until burnout hit hard. The support group sessions reminded me that I matter too. Self-care isn't selfish—it's survival.",
     condition: "Burnout Recovery",
     image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face",
-    fullStory: "Caring for my mother with Alzheimer's, I lost myself completely. I was exhausted, depressed, and felt guilty for even thinking about my own needs. The caregiver support group at MindfulPath saved me. Dr. Jennifer taught me that I couldn't pour from an empty cup. Now I prioritize self-care, and I'm a better caregiver for it.",
+    fullStory: "Caring for my mother with Alzheimer's, I lost myself completely. I was exhausted, depressed, and felt guilty for even thinking about my own needs. The caregiver support group at Voice4Minds saved me. Dr. Jennifer taught me that I couldn't pour from an empty cup. Now I prioritize self-care, and I'm a better caregiver for it.",
   },
   {
     name: "Alex R.",
