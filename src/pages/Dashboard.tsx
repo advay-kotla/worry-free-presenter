@@ -26,6 +26,7 @@ import QuickActions from "@/components/dashboard/QuickActions";
 import ProgressView from "@/components/dashboard/ProgressView";
 import MeditationTimer from "@/components/dashboard/MeditationTimer";
 import MotivationalQuotes from "@/components/dashboard/MotivationalQuotes";
+import JournalFeature from "@/components/dashboard/JournalFeature";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -287,6 +288,11 @@ const Dashboard = () => {
                     <div className="grid lg:grid-cols-2 gap-6">
                       <MeditationTimer />
                       <WellnessGoals />
+                    </div>
+
+                    {/* Journal */}
+                    <div className="grid lg:grid-cols-1 gap-6">
+                      <JournalFeature />
                     </div>
                   </div>
                 </ScrollArea>
