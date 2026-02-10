@@ -24,6 +24,8 @@ import DailyCheckin from "@/components/dashboard/DailyCheckin";
 import WellnessGoals from "@/components/dashboard/WellnessGoals";
 import QuickActions from "@/components/dashboard/QuickActions";
 import ProgressView from "@/components/dashboard/ProgressView";
+import MeditationTimer from "@/components/dashboard/MeditationTimer";
+import MotivationalQuotes from "@/components/dashboard/MotivationalQuotes";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -276,12 +278,14 @@ const Dashboard = () => {
 
                       {/* Right Column - Goals & Actions */}
                       <div className="space-y-6">
+                        <MotivationalQuotes />
                         <QuickActions />
                       </div>
                     </div>
 
-                    {/* Bottom Row - Wellness Goals */}
+                    {/* Bottom Row - Meditation & Goals */}
                     <div className="grid lg:grid-cols-2 gap-6">
+                      <MeditationTimer />
                       <WellnessGoals />
                     </div>
                   </div>
